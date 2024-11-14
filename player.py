@@ -30,7 +30,7 @@ class Player(Actor):
             int(self.y - self.facet.get_height() / 2),
         )
 
-    def draw(self, surface: Surface) -> None:
+    async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(
             self.facet,
             self.angle * 180 / math.pi,
@@ -39,7 +39,7 @@ class Player(Actor):
         y = int(self.y - facet.get_height() / 2)
         surface.blit(facet, (x, y))
 
-    def update(self, delta: float) -> None:
+    async def update(self, delta: float) -> None:
         self.x += self.speed * self.dx * delta
         self.y += self.speed * self.dy * delta
         self.angle += (self.dangle - self.angle) * delta * 4
@@ -47,7 +47,7 @@ class Player(Actor):
         self.y = max([0, min([RESOLUTION[1], self.y])])
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
 
-    def react(self, events: list[Event]) -> None:
+    async def react(self, events: list[Event]) -> None:
         for event in (ev for ev in events if ev.type == pygame.KEYUP):
             if event.key in (pygame.K_UP, pygame.K_w):
                 self.keys[0] = False

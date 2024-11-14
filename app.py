@@ -1,3 +1,4 @@
+import asyncio
 from typing import NoReturn
 import pygame
 from pygame import Surface
@@ -25,29 +26,28 @@ class App:
     def populate(self) -> None:
         self.actors.append(Player())
 
-    def update(self) -> None:
+    async def update(self) -> None:
         delta: float = self.clock.tick(FPS) / 1000
-        for actor in self.actors:
-            actor.update(delta)
+        await asyncio.gather(*[actor.update(delta) for actor in self.actors])
 
-    def draw(self) -> None:
+    async def draw(self) -> None:
         self.screen.fill(BACKGROUND)
-        for actor in self.actors:
-            actor.draw(self.screen)
+        await asyncio.gather(*[actor.draw(self.screen) for actor in self.actors])
         pygame.display.flip()
 
-    def events(self) -> None:
+    async def events(self) -> None:
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 import sys
                 pygame.quit()
                 sys.exit()
-        for actor in self.actors:
-            actor.react(events)
+        await asyncio.gather(*[actor.react(events) for actor in self.actors])
 
-    def start(self) -> NoReturn:
+    async def start(self) -> NoReturn:
         while True:
-            self.events()
-            self.update()
-            self.draw()
+            await asyncio.gather(
+                self.events(),
+                self.update(),
+                self.draw(),
+            )
