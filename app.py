@@ -7,6 +7,7 @@ from pygame.time import Clock
 
 from actor import Actor
 from consts import BACKGROUND, FPS, RESOLUTION
+from fps import FpsDisplay
 from player import Player
 
 
@@ -24,7 +25,10 @@ class App:
         self.populate()
 
     def populate(self) -> None:
-        self.actors.append(Player())
+        self.actors.extend((
+            FpsDisplay(),
+            Player(),
+        ))
 
     async def update(self) -> None:
         delta: float = self.clock.tick(FPS) / 1000
