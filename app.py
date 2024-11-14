@@ -9,6 +9,7 @@ from actor import Actor, AddActor, RemoveActor
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
+from spawner import Spawner
 
 
 class App:
@@ -27,6 +28,7 @@ class App:
 
     def populate(self) -> None:
         self.actors.extend((
+            Spawner(),
             FpsDisplay(),
             Player(),
         ))

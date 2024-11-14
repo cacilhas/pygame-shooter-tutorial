@@ -42,8 +42,8 @@ class Actor:
     def pos(self) -> tuple[int, int]:
         ...
 
-    async def update(self, delta: float) -> 'Action':
-        ...
+    async def update(self, delta: float) -> Action:
+        return Action.noAction
 
     async def draw(self, surface: Surface) -> None:
         ...

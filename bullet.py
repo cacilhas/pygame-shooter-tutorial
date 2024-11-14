@@ -13,7 +13,7 @@ class Bullet(Actor):
     sound: Sound|None = None
 
     @classmethod
-    def load_texture(cls) -> None:
+    def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
@@ -26,7 +26,7 @@ class Bullet(Actor):
         self.speed = 1200.0
 
         if Bullet.facet is None:
-            Bullet.load_texture()
+            Bullet.load_assets()
         assert Bullet.sound
         Bullet.sound.play()
 
