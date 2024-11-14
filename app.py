@@ -5,7 +5,7 @@ from pygame import Surface
 from pygame.constants import K_ESCAPE
 from pygame.time import Clock
 
-from actor import Actor
+from actor import Actor, AddActor, RemoveActor
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
@@ -32,7 +32,13 @@ class App:
 
     async def update(self) -> None:
         delta: float = self.clock.tick(FPS) / 1000
-        await asyncio.gather(*[actor.update(delta) for actor in self.actors])
+        actions = await asyncio.gather(*[actor.update(delta) for actor in self.actors])
+        for action in actions:
+            response = action.perform()
+            if isinstance(response, AddActor):
+                self.actors.insert(0, response.actor)
+            elif isinstance(response, RemoveActor):
+                self.actors.remove(response.actor)
 
     async def draw(self) -> None:
         self.screen.fill(BACKGROUND)

@@ -2,7 +2,7 @@ import pygame
 from pygame.event import Event
 from pygame.font import Font
 from pygame.surface import Surface
-from actor import Actor
+from actor import Action, Actor
 
 
 class FpsDisplay(Actor):
@@ -12,9 +12,10 @@ class FpsDisplay(Actor):
         self.text = 'FPS: 0.0'
         self.present = False
 
-    async def update(self, delta: float) -> None:
+    async def update(self, delta: float) -> Action:
         fps = 1 / delta
         self.text = f'FPS: {fps:.1f}'
+        return Action.noAction
 
     async def react(self, events: list[Event]) -> None:
         for event in events:
