@@ -46,8 +46,6 @@ class App:
 
     async def start(self) -> NoReturn:
         while True:
-            await asyncio.gather(
-                self.events(),
-                self.update(),
-                self.draw(),
-            )
+            await self.events()
+            await self.update()
+            await self.draw()
