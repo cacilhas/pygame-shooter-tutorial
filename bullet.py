@@ -2,6 +2,7 @@
 import math
 from pygame import Surface
 import pygame
+from pygame.mixer import Sound
 from actor import Action, Actor
 from consts import RESOLUTION
 
@@ -9,6 +10,7 @@ from consts import RESOLUTION
 class Bullet(Actor):
 
     facet: Surface|None = None
+    sound: Sound|None = None
 
     @classmethod
     def load_texture(cls) -> None:
@@ -16,6 +18,7 @@ class Bullet(Actor):
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
         )
+        cls.sound = Sound('assets/missile.wav')
 
     def __init__(self, pos: tuple[float, float], angle: float) -> None:
         self.x, self.y = pos
@@ -24,6 +27,8 @@ class Bullet(Actor):
 
         if Bullet.facet is None:
             Bullet.load_texture()
+        assert Bullet.sound
+        Bullet.sound.play()
 
     @property
     def pos(self) -> tuple[int, int]:

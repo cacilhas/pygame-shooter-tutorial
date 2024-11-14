@@ -15,6 +15,7 @@ class App:
 
     def __init__(self) -> None:
         pygame.init()
+        pygame.mixer.init()
         self.screen: Surface = pygame.display.set_mode(
             RESOLUTION,
             pygame.NOFRAME | pygame.DOUBLEBUF,
