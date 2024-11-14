@@ -3,7 +3,7 @@ import math
 from pygame import Surface
 import pygame
 from pygame.mixer import Sound
-from actor import Action, Actor
+from action import Action, Actor
 from consts import RESOLUTION
 
 

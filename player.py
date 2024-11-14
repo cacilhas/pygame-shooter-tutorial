@@ -2,7 +2,7 @@ import math
 import pygame
 from pygame import Surface
 from pygame.event import Event
-from actor import Action, Actor
+from action import Action, Actor
 from bullet import Bullet
 from consts import RESOLUTION
 

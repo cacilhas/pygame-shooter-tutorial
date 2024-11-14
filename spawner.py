@@ -1,5 +1,5 @@
 from random import randint, random
-from actor import Action, Actor
+from action import Action, Actor
 from consts import RESOLUTION
 from foe import Foe
 

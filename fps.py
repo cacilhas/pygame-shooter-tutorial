@@ -2,7 +2,7 @@ import pygame
 from pygame.event import Event
 from pygame.font import Font
 from pygame.surface import Surface
-from actor import Action, Actor
+from action import Action, Actor
 
 
 class FpsDisplay(Actor):

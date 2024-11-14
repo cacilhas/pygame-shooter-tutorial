@@ -1,6 +1,6 @@
 from pygame import Surface
 import pygame
-from actor import Action, Actor
+from action import Action, Actor
 from consts import RESOLUTION
 
 
