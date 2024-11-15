@@ -61,27 +61,30 @@ class Player(Collider):
 
     async def react(self, events: list[Event]) -> None:
         for event in (ev for ev in events if ev.type == pygame.KEYUP):
-            if event.key in (pygame.K_UP, pygame.K_w):
-                self.keys[0] = False
-            if event.key in (pygame.K_DOWN, pygame.K_s):
-                self.keys[1] = False
-            if event.key in (pygame.K_LEFT, pygame.K_a):
-                self.keys[2] = False
-            if event.key in (pygame.K_RIGHT, pygame.K_d):
-                self.keys[3] = False
-            if event.key in (pygame.K_SPACE, pygame.K_LCTRL):
-                self.keys[4] = False
+            match event.key:
+                case pygame.K_UP | pygame.K_w:
+                    self.keys[0] = False
+                case pygame.K_DOWN | pygame.K_s:
+                    self.keys[1] = False
+                case pygame.K_LEFT | pygame.K_a:
+                    self.keys[2] = False
+                case pygame.K_RIGHT | pygame.K_d:
+                    self.keys[3] = False
+                case pygame.K_SPACE | pygame.K_LCTRL:
+                    self.keys[4] = False
+
         for event in (ev for ev in events if ev.type == pygame.KEYDOWN):
-            if event.key in (pygame.K_UP, pygame.K_w):
-                self.keys[0] = True
-            if event.key in (pygame.K_DOWN, pygame.K_s):
-                self.keys[1] = True
-            if event.key in (pygame.K_LEFT, pygame.K_a):
-                self.keys[2] = True
-            if event.key in (pygame.K_RIGHT, pygame.K_d):
-                self.keys[3] = True
-            if event.key in (pygame.K_SPACE, pygame.K_LCTRL):
-                self.keys[4] = True
+            match event.key:
+                case pygame.K_UP | pygame.K_w:
+                    self.keys[0] = True
+                case pygame.K_DOWN | pygame.K_s:
+                    self.keys[1] = True
+                case pygame.K_LEFT | pygame.K_a:
+                    self.keys[2] = True
+                case pygame.K_RIGHT | pygame.K_d:
+                    self.keys[3] = True
+                case pygame.K_SPACE | pygame.K_LCTRL:
+                    self.keys[4] = True
 
         self.dx = self.dy = self.dangle = 0
         if self.keys[0]:
