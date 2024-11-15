@@ -19,11 +19,14 @@ class App:
     def __init__(self) -> None:
         pygame.init()
         AudioBag.init()
+        pygame.display.set_caption('Shooter Tutorial')
         self.screen: Surface = pygame.display.set_mode(
             RESOLUTION,
-            pygame.NOFRAME | pygame.DOUBLEBUF,
+            pygame.DOUBLEBUF
+            | pygame.FULLSCREEN
+            | pygame.SCALED,
+            vsync=1,
         )
-        pygame.display.set_caption('Shooter Tutorial')
         self.clock = Clock()
         self.actors: list[Actor] = []
         self.populate()
