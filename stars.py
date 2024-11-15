@@ -11,6 +11,7 @@ class StarsBackground(Actor):
         facet = self.facet = Surface(RESOLUTION, pygame.SRCALPHA)
         self.speed: float = 40.0
         self.x: float = 0.0
+        self.z = -1
         width = self.width = RESOLUTION[0]
 
         for x in range(width):

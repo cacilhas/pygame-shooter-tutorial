@@ -83,6 +83,8 @@ Action._types.ActionSet = __ActionSet
 
 class Actor:
 
+    z: int = 0
+
     @property
     def pos(self) -> tuple[int, int]:
         x, y = self.xy

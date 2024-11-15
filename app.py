@@ -1,7 +1,7 @@
 import asyncio
 import random
 import sys
-from typing import Coroutine, Iterable, NoReturn, TypeIs
+from typing import Coroutine, DefaultDict, Iterable, NoReturn, TypeIs
 import pygame
 from pygame import Surface
 from pygame.constants import K_ESCAPE
@@ -41,8 +41,8 @@ class App:
         """
         Add actors to the world
         """
-        self.background = StarsBackground()
         self.actors.extend((
+            StarsBackground(),
             Spawner(),
             FpsDisplay(),
             Score(self),
@@ -78,7 +78,6 @@ class App:
             for actor in self.actors
         ))
         actions.extend(await self.check_collisions())
-        await self.background.update(delta)
         async for action in async_gen(actions):
             if action:
                 await self.process(action)
@@ -108,10 +107,16 @@ class App:
             return
 
     async def draw(self) -> None:
+        """
+        Draw actors on overlapped layers by z-axis
+        """
         self.screen.fill(BACKGROUND)
-        await self.background.draw(self.screen)
+        layers: dict[int, Surface] = DefaultDict(lambda: Surface(RESOLUTION, pygame.SRCALPHA))
         async for actor in async_gen(self.actors):
-            await actor.draw(self.screen)
+            layer = layers[actor.z]
+            await actor.draw(layer)
+        for _, layer in sorted((pair for pair in layers.items()), key=lambda pair: pair[0]):
+            self.screen.blit(layer, (0, 0))
         pygame.display.flip()
 
     async def events(self) -> None:

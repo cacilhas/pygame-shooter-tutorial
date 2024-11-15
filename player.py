@@ -26,6 +26,7 @@ class Player(Collider):
             Player.load_assets()
 
         pygame.display.set_icon(self.facet)
+        self.z = 10
         self.keys: list[bool] = [False] * 5
         self.speed: float = 400.0
         self.no_fire = 0.0
