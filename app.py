@@ -53,15 +53,22 @@ class App:
 
     async def update(self) -> None:
         delta: float = self.clock.tick(FPS) / 1000
-        actions = await asyncio.gather(*[actor.update(delta) for actor in self.actors])
+        actions = await asyncio.gather(*(
+            actor.update(delta)
+            for actor in self.actors
+        ))
         actions.extend(await self.check_collisions())
-        for action in actions:
-            await self.process(action)
+        await asyncio.gather(*(
+            self.process(action)
+            for action in actions
+        ))
 
     async def process(self, action: Action) -> None:
         if isinstance(action, ActionSet):
-            for action in action.actions:
-                await self.process(action)
+            await asyncio.gather(*(
+                self.process(action)
+                for action in action.actions
+            ))
 
         if isinstance(action, AddActor):
             for actor in action.actors:
