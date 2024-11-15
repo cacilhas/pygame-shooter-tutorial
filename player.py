@@ -42,9 +42,7 @@ class Player(Collider):
             self.facet,
             -self.angle * 180 / math.pi,
         )
-        x = int(self.x - facet.get_width() / 2)
-        y = int(self.y - facet.get_height() / 2)
-        surface.blit(facet, (x, y))
+        self.blit(dest=surface, src=facet)
 
     async def update(self, delta: float) -> Action | None:
         self.no_fire = max([0, self.no_fire - delta])

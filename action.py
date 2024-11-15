@@ -1,6 +1,6 @@
 import math
 from types import ModuleType
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, TypeIs
 from pygame import Surface
 from pygame.event import Event
 
@@ -28,6 +28,22 @@ class Action:
     @classmethod
     def incr_score(cls, value: int) -> 'Action':
         return cls._types.IncrScore(value)
+
+    @classmethod
+    def isActionSet(cls, actor) -> 'TypeIs[__ActionSet]':
+        return isinstance(actor, cls._types.ActionSet)
+
+    @classmethod
+    def isAddActor(cls, actor) -> 'TypeIs[__AddActor]':
+        return isinstance(actor, cls._types.AddActor)
+
+    @classmethod
+    def isIncrScore(cls, actor) -> 'TypeIs[__IncrScore]':
+        return isinstance(actor, cls._types.IncrScore)
+
+    @classmethod
+    def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
+        return isinstance(actor, cls._types.RemoveActor)
 
 
 class __RemoveActor(Action):
@@ -76,6 +92,11 @@ class Actor:
     @property
     def xy(self) -> tuple[float, float]:
         return 1 << 32, 1 << 32
+
+    def blit(self, *, dest: Surface, src: Surface) -> None:
+        x, y = self.pos
+        width, height = src.get_size()
+        dest.blit(src, (x - width/2, y - height/2))
 
     async def update(self, delta: float) -> Action | None:
         ...

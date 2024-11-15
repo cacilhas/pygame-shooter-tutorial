@@ -38,9 +38,7 @@ class Bullet(Collider):
     async def draw(self, surface: Surface) -> None:
         facet = Bullet.facet
         assert facet
-        x = int(self.x - facet.get_width() / 2)
-        y = int(self.y - facet.get_height() / 2)
-        surface.blit(facet, (x, y))
+        self.blit(dest=surface, src=facet)
 
     async def update(self, delta: float) -> Action | None:
         facet = Bullet.facet
