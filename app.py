@@ -6,10 +6,11 @@ from pygame import Surface
 from pygame.constants import K_ESCAPE
 from pygame.time import Clock
 
-from action import Action, ActionSet, Actor, AddActor, Collider, RemoveActor
+from action import Action, ActionSet, Actor, AddActor, Collider, IncrScore, RemoveActor
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
+from score import Score
 from sounds import AudioBag
 from spawner import Spawner
 
@@ -28,7 +29,7 @@ class App:
             vsync=1,
         )
         self.clock = Clock()
-        self.score = 0
+        self.score: int = 0
         self.actors: list[Actor] = []
         self.populate()
 
@@ -36,6 +37,7 @@ class App:
         self.actors.extend((
             Spawner(),
             FpsDisplay(),
+            Score(self),
             Player(),
         ))
 
@@ -80,6 +82,9 @@ class App:
             for actor in action.actors:
                 self.actors.insert(0, actor)
             return
+
+        if isinstance(action, IncrScore):
+            self.score += action.value
 
         if isinstance(action, RemoveActor):
             for actor in action.actors:

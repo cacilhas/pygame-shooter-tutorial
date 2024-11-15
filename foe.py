@@ -52,13 +52,15 @@ class Foe(Collider):
     async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:
         if isinstance(other, Bullet):
             self.hp -= 1
-            to_remove: list[Collider] = [other]
             if self.hp <= 0:
-                to_remove.append(self)
                 AudioBag.explosions[1].play()
+                return Action.set(
+                    Action.remove(self, other),
+                    Action.incr_score(10),
+                )
             else:
                 AudioBag.explosions[0].play()
-            return Action.remove(*to_remove)
+                return Action.remove(other)
         if jump:
             return
         return await other.on_collision(self, jump=True)

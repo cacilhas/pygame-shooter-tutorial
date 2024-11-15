@@ -18,6 +18,10 @@ class Action:
     def set(*actions: 'Action') -> 'Action':
         return ActionSet(actions)
 
+    @staticmethod
+    def incr_score(value: int) -> 'Action':
+        return IncrScore(value)
+
 
 class RemoveActor(Action):
 
@@ -29,6 +33,12 @@ class AddActor(Action):
 
     def __init__(self, actors: Iterable['Actor']) -> None:
         self.actors = actors
+
+
+class IncrScore(Action):
+
+    def __init__(self, value: int) -> None:
+        self.value = value
 
 
 class ActionSet(Action):
