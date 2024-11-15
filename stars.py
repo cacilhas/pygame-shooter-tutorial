@@ -21,9 +21,10 @@ class StarsBackground(Actor):
         facets = self.facets = [
             Surface(RESOLUTION, pygame.SRCALPHA),
             Surface(RESOLUTION, pygame.SRCALPHA),
+            Surface(RESOLUTION, pygame.SRCALPHA),
         ]
-        self.speeds: list[float] = [20.0, 40.0]
-        self.xs: list[float] = [0.0, 0.0]
+        self.speeds: list[float] = [10.0, 20.0, 40.0]
+        self.xs: list[float] = [10.0, 0.0, 0.0]
 
         for i, facet in enumerate(facets):
             for x in range(0, width, 1 << i):
@@ -33,7 +34,7 @@ class StarsBackground(Actor):
                     facet,
                     color,
                     (x, y),
-                    1 << i,
+                    i + 1,
                 )
 
     async def update(self, delta: float) -> Action | None:
