@@ -14,6 +14,7 @@ from player import Player
 from score import Score
 from sounds import AudioBag
 from spawner import Spawner
+from stars import StarsBackground
 from util import async_gen
 
 
@@ -40,6 +41,7 @@ class App:
         """
         Add actors to the world
         """
+        self.background = StarsBackground()
         self.actors.extend((
             Spawner(),
             FpsDisplay(),
@@ -76,6 +78,7 @@ class App:
             for actor in self.actors
         ))
         actions.extend(await self.check_collisions())
+        await self.background.update(delta)
         async for action in async_gen(actions):
             if action:
                 await self.process(action)
@@ -106,7 +109,9 @@ class App:
 
     async def draw(self) -> None:
         self.screen.fill(BACKGROUND)
-        await asyncio.gather(*[actor.draw(self.screen) for actor in self.actors])
+        await self.background.draw(self.screen)
+        async for actor in async_gen(self.actors):
+            await actor.draw(self.screen)
         pygame.display.flip()
 
     async def events(self) -> None:
