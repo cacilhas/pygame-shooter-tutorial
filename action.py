@@ -1,4 +1,5 @@
 import math
+from types import ModuleType
 from typing import Any, Callable, Iterable
 from pygame import Surface
 from pygame.event import Event
@@ -6,45 +7,59 @@ from pygame.event import Event
 
 class Action:
 
-    @staticmethod
-    def register(*actors: 'Actor') -> 'Action':
-        return AddActor(actors)
+    class _types(ModuleType):
+        ActionSet: 'type[__ActionSet]'
+        AddActor: 'type[__AddActor]'
+        IncrScore: 'type[__IncrScore]'
+        RemoveActor: 'type[__RemoveActor]'
 
-    @staticmethod
-    def remove(*actors: 'Actor') -> 'Action':
-        return RemoveActor(actors)
+    @classmethod
+    def register(cls, *actors: 'Actor') -> 'Action':
+        return cls._types.AddActor(actors)
 
-    @staticmethod
-    def set(*actions: 'Action') -> 'Action':
-        return ActionSet(actions)
+    @classmethod
+    def remove(cls, *actors: 'Actor') -> 'Action':
+        return cls._types.RemoveActor(actors)
 
-    @staticmethod
-    def incr_score(value: int) -> 'Action':
-        return IncrScore(value)
+    @classmethod
+    def set(cls, *actions: 'Action') -> 'Action':
+        return cls._types.ActionSet(actions)
+
+    @classmethod
+    def incr_score(cls, value: int) -> 'Action':
+        return cls._types.IncrScore(value)
 
 
-class RemoveActor(Action):
+class __RemoveActor(Action):
 
     def __init__(self, actors: Iterable['Actor']) -> None:
         self.actors = actors
 
+Action._types.RemoveActor = __RemoveActor
 
-class AddActor(Action):
+
+class __AddActor(Action):
 
     def __init__(self, actors: Iterable['Actor']) -> None:
         self.actors = actors
 
+Action._types.AddActor = __AddActor
 
-class IncrScore(Action):
+
+class __IncrScore(Action):
 
     def __init__(self, value: int) -> None:
         self.value = value
 
+Action._types.IncrScore = __IncrScore
 
-class ActionSet(Action):
+
+class __ActionSet(Action):
 
     def __init__(self, actions: Iterable[Action]) -> None:
         self.actions = actions
+
+Action._types.ActionSet = __ActionSet
 
 
 class Actor:

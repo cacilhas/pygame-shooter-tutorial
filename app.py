@@ -6,7 +6,7 @@ from pygame import Surface
 from pygame.constants import K_ESCAPE
 from pygame.time import Clock
 
-from action import Action, ActionSet, Actor, AddActor, Collider, IncrScore, RemoveActor
+from action import Action, Actor, Collider
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
@@ -71,19 +71,19 @@ class App:
                 await self.process(action)
 
     async def process(self, action: Action) -> None:
-        if isinstance(action, ActionSet):
+        if isinstance(action, Action._types.ActionSet):
             async for a in async_gen(action.actions):
                 await self.process(a)
 
-        if isinstance(action, AddActor):
+        if isinstance(action, Action._types.AddActor):
             for actor in action.actors:
                 self.actors.insert(0, actor)
             return
 
-        if isinstance(action, IncrScore):
+        if isinstance(action, Action._types.IncrScore):
             self.score += action.value
 
-        if isinstance(action, RemoveActor):
+        if isinstance(action, Action._types.RemoveActor):
             for actor in action.actors:
                 try:
                     self.actors.remove(actor)
