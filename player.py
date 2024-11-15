@@ -17,6 +17,7 @@ class Player(Collider):
             pygame.image.load('assets/player.png').convert_alpha(),
             (64, 64),
         )
+        pygame.display.set_icon(self.facet)
         self.keys: list[bool] = [False] * 5
         self.speed: float = 400.0
         self.no_fire = 0.0
