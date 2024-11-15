@@ -50,7 +50,7 @@ class Player(Collider):
         self.x += self.speed * self.dx * delta
         self.y += self.speed * self.dy * delta
         self.angle += (self.dangle - self.angle) * delta * 4
-        self.x = max([0, min([RESOLUTION[0] / 2, self.x])])
+        self.x = max([0, min([RESOLUTION[0] * 2/3, self.x])])
         self.y = max([0, min([RESOLUTION[1], self.y])])
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
 
