@@ -5,6 +5,7 @@ from pygame.event import Event
 from action import Action, Collider
 from bullet import Bullet
 from consts import RESOLUTION
+from explosion import Explosion
 from foe import Foe
 from sounds import AudioBag
 from util import async_gen
@@ -107,5 +108,7 @@ class Player(Collider):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Foe):
-            AudioBag.explosions[1].play()
-            return Action.remove(self, other)
+            return Action.set(
+                Action.remove(self, other),
+                Action.register(Explosion(pos=self.pos, size=120)),
+            )

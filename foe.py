@@ -3,6 +3,7 @@ import pygame
 from action import Action, Collider
 from bullet import Bullet
 from consts import FPS, RESOLUTION
+from explosion import Explosion
 from sounds import AudioBag
 
 
@@ -46,9 +47,10 @@ class Foe(Collider):
         if isinstance(other, Bullet):
             self.hp -= 1
             if self.hp <= 0:
-                AudioBag.explosions[1].play()
                 return Action.set(
-                    Action.remove(self, other),
+                    Action.register(Explosion(pos=self.pos, size=72)),
+                    Action.remove(self),
+                    Action.remove(other),
                     Action.incr_score(10),
                 )
             else:
