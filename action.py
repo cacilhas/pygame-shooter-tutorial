@@ -5,81 +5,89 @@ from pygame import Surface
 from pygame.event import Event
 
 
+#---------#---------------------------------------------------------------------
+# Actions #
+#---------#
+
 class Action:
 
-    class _types(ModuleType):
-        ActionSet: 'type[__ActionSet]'
-        AddActor: 'type[__AddActor]'
-        IncrScore: 'type[__IncrScore]'
-        RemoveActor: 'type[__RemoveActor]'
+    __ActionSet: 'type[__ActionSet]'
+    __AddActor: 'type[__AddActor]'
+    __IncrScore: 'type[__IncrScore]'
+    __RemoveActor: 'type[__RemoveActor]'
 
     @classmethod
     def register(cls, *actors: 'Actor') -> 'Action':
-        return cls._types.AddActor(actors)
+        return cls.__AddActor(actors)
 
     @classmethod
     def remove(cls, *actors: 'Actor') -> 'Action':
-        return cls._types.RemoveActor(actors)
+        return cls.__RemoveActor(actors)
 
     @classmethod
     def set(cls, *actions: 'Action') -> 'Action':
-        return cls._types.ActionSet(actions)
+        return cls.__ActionSet(actions)
 
     @classmethod
     def incr_score(cls, value: int) -> 'Action':
-        return cls._types.IncrScore(value)
+        return cls.__IncrScore(value)
 
     @classmethod
     def isActionSet(cls, actor) -> 'TypeIs[__ActionSet]':
-        return isinstance(actor, cls._types.ActionSet)
+        return isinstance(actor, cls.__ActionSet)
 
     @classmethod
     def isAddActor(cls, actor) -> 'TypeIs[__AddActor]':
-        return isinstance(actor, cls._types.AddActor)
+        return isinstance(actor, cls.__AddActor)
 
     @classmethod
     def isIncrScore(cls, actor) -> 'TypeIs[__IncrScore]':
-        return isinstance(actor, cls._types.IncrScore)
+        return isinstance(actor, cls.__IncrScore)
 
     @classmethod
     def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
-        return isinstance(actor, cls._types.RemoveActor)
+        return isinstance(actor, cls.__RemoveActor)
 
     def __len__(self) -> int:
         return 1
 
 
+def register_subclass[T](cls: type[T]) -> type[T]:
+    setattr(Action, f'_{Action.__name__}{cls.__name__}', cls)
+    return cls
+
+
+@register_subclass
 class __RemoveActor(Action):
 
     def __init__(self, actors: Iterable['Actor']) -> None:
         self.actors = actors
 
-Action._types.RemoveActor = __RemoveActor
 
-
+@register_subclass
 class __AddActor(Action):
 
     def __init__(self, actors: Iterable['Actor']) -> None:
         self.actors = actors
 
-Action._types.AddActor = __AddActor
 
-
+@register_subclass
 class __IncrScore(Action):
 
     def __init__(self, value: int) -> None:
         self.value = value
 
-Action._types.IncrScore = __IncrScore
 
-
+@register_subclass
 class __ActionSet(Action):
 
     def __init__(self, actions: Iterable[Action]) -> None:
         self.actions = actions
 
-Action._types.ActionSet = __ActionSet
 
+#--------#----------------------------------------------------------------------
+# Actors #
+#--------#
 
 class Actor:
 

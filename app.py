@@ -15,7 +15,6 @@ from score import Score
 from sounds import AudioBag
 from spawner import Spawner
 from stars import StarsBackground
-from util import async_gen
 
 
 class App:
@@ -78,17 +77,19 @@ class App:
             for actor in self.actors
         ))
         actions.extend(await self.check_collisions())
-        async for action in async_gen(actions):
-            if action:
-                await self.process(action)
+        await asyncio.gather(*(
+            self.process(action)
+            for action in actions
+            if action
+        ))
 
     async def process(self, action: Action) -> None:
         """
         Process all collected actions
         """
         if Action.isActionSet(action):
-            async for a in async_gen(action.actions):
-                await self.process(a)
+            await asyncio.gather(*(self.process(a) for a in action.actions))
+            return
 
         if Action.isAddActor(action):
             for actor in action.actors:
@@ -112,8 +113,9 @@ class App:
         """
         self.screen.fill(BACKGROUND)
         layers: dict[int, Surface] = DefaultDict(lambda: Surface(RESOLUTION, pygame.SRCALPHA))
-        async for actor in async_gen(self.actors):
-            await actor.draw(layers[actor.z])
+        # Asynchronous drawing
+        await asyncio.gather(*(actor.draw(layers[actor.z]) for actor in self.actors))
+        # Synchronous drawing
         for _, layer in sorted((pair for pair in layers.items()), key=lambda pair: pair[0]):
             self.screen.blit(layer, (0, 0))
         pygame.display.flip()
@@ -128,8 +130,7 @@ class App:
                 import sys
                 pygame.quit()
                 sys.exit()
-        async for actor in async_gen(self.actors):
-            await actor.react(events)
+        await asyncio.gather(*(actor.react(events) for actor in self.actors))
 
     async def start(self) -> NoReturn:
         while True:

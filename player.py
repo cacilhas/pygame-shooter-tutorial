@@ -39,7 +39,7 @@ class Player(Collider):
 
     @property
     def radius(self) -> float:
-        return 32
+        return 28
 
     @property
     def xy(self) -> tuple[float, float]:
