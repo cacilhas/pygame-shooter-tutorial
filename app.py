@@ -1,4 +1,5 @@
 import asyncio
+import random
 import sys
 from typing import Coroutine, Iterable, NoReturn, TypeIs
 import pygame
@@ -19,6 +20,7 @@ from util import async_gen
 class App:
 
     def __init__(self) -> None:
+        random.seed()
         pygame.init()
         AudioBag.init()
         pygame.display.set_caption('Simple PyGame Shooter')
