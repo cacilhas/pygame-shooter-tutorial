@@ -113,8 +113,7 @@ class App:
         self.screen.fill(BACKGROUND)
         layers: dict[int, Surface] = DefaultDict(lambda: Surface(RESOLUTION, pygame.SRCALPHA))
         async for actor in async_gen(self.actors):
-            layer = layers[actor.z]
-            await actor.draw(layer)
+            await actor.draw(layers[actor.z])
         for _, layer in sorted((pair for pair in layers.items()), key=lambda pair: pair[0]):
             self.screen.blit(layer, (0, 0))
         pygame.display.flip()

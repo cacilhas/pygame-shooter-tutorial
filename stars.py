@@ -1,4 +1,4 @@
-from random import randint
+from random import choice, randint
 from pygame import Surface
 import pygame
 from action import Action, Actor
@@ -7,32 +7,42 @@ from consts import RESOLUTION
 
 class StarsBackground(Actor):
 
+    colors = [
+        (0xff, 0xff, 0xff),
+        (0xff, 0xd0, 0xd0),
+        (0xff, 0xff, 0xd0),
+        (0xd0, 0xd0, 0xff),
+    ]
+
     def __init__(self) -> None:
-        facet = self.facet = Surface(RESOLUTION, pygame.SRCALPHA)
-        self.speed: float = 40.0
-        self.x: float = 0.0
         self.z = -1
         width = self.width = RESOLUTION[0]
 
-        for x in range(width):
-            y = randint(0, RESOLUTION[1])
-            pygame.draw.circle(
-                facet,
-                'white',
-                (x, y),
-                1,
-            )
+        facets = self.facets = [
+            Surface(RESOLUTION, pygame.SRCALPHA),
+            Surface(RESOLUTION, pygame.SRCALPHA),
+        ]
+        self.speeds: list[float] = [20.0, 40.0]
+        self.xs: list[float] = [0.0, 0.0]
 
-    @property
-    def xy(self) -> tuple[float, float]:
-        return self.x, 0.0
+        for i, facet in enumerate(facets):
+            for x in range(0, width, 1 << i):
+                y = randint(0, RESOLUTION[1])
+                color = choice(self.colors)
+                pygame.draw.circle(
+                    facet,
+                    color,
+                    (x, y),
+                    1 << i,
+                )
 
     async def update(self, delta: float) -> Action | None:
-        self.x -= self.speed * delta
-        if self.x <= - self.width:
-            self.x += self.width
+        for i, speed in enumerate(self.speeds):
+            self.xs[i] -= speed * delta
+            if self.xs[i] < 0:
+                self.xs[i] += self.width
 
     async def draw(self, surface: Surface) -> None:
-        surface.blit(self.facet, self.pos)
-        pos = self.pos[0] + self.width, self.pos[1]
-        surface.blit(self.facet, pos)
+        for i, facet in enumerate(self.facets):
+            surface.blit(facet, (self.xs[i] - self.width, 0))
+            surface.blit(facet, (self.xs[i], 0))
