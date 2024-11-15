@@ -33,7 +33,7 @@ class Foe(Collider):
 
     @property
     def radius(self) -> float:
-        return 20
+        return 32
 
     async def draw(self, surface: Surface) -> None:
         facet = Foe.facet

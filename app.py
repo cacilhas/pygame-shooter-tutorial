@@ -13,6 +13,7 @@ from player import Player
 from score import Score
 from sounds import AudioBag
 from spawner import Spawner
+from util import async_gen
 
 
 class App:
@@ -65,18 +66,14 @@ class App:
             for actor in self.actors
         ))
         actions.extend(await self.check_collisions())
-        await asyncio.gather(*(
-            self.process(action)
-            for action in actions
-            if action
-        ))
+        async for action in async_gen(actions):
+            if action:
+                await self.process(action)
 
     async def process(self, action: Action) -> None:
         if isinstance(action, ActionSet):
-            await asyncio.gather(*(
-                self.process(action)
-                for action in action.actions
-            ))
+            async for a in async_gen(action.actions):
+                await self.process(a)
 
         if isinstance(action, AddActor):
             for actor in action.actors:

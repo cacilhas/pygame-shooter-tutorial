@@ -7,6 +7,7 @@ from bullet import Bullet
 from consts import RESOLUTION
 from foe import Foe
 from sounds import AudioBag
+from util import async_gen
 
 
 class Player(Collider):
@@ -60,7 +61,7 @@ class Player(Collider):
             return Action.register(Bullet(pos, self.angle))
 
     async def react(self, events: list[Event]) -> None:
-        for event in (ev for ev in events if ev.type == pygame.KEYUP):
+        async for event in async_gen(ev for ev in events if ev.type == pygame.KEYUP):
             match event.key:
                 case pygame.K_UP | pygame.K_w:
                     self.keys[0] = False
@@ -73,7 +74,7 @@ class Player(Collider):
                 case pygame.K_SPACE | pygame.K_LCTRL:
                     self.keys[4] = False
 
-        for event in (ev for ev in events if ev.type == pygame.KEYDOWN):
+        async for event in async_gen(ev for ev in events if ev.type == pygame.KEYDOWN):
             match event.key:
                 case pygame.K_UP | pygame.K_w:
                     self.keys[0] = True
