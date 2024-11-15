@@ -56,15 +56,19 @@ class App:
         if len(colliders) < 2:
             return []
 
+        async def process_collision(actor1: Collider, actor2: Collider) -> Action | None:
+            action = await actor1.on_collision(actor2)
+            if action:
+                return action
+            return await actor2.on_collision(actor1)
+
         futures: list[Coroutine[None, None, Action | None]] = [
-            actor1.on_collision(actor2) or actor2.on_collision(actor1)
+            process_collision(actor1, actor2)
             for i, actor1 in enumerate(colliders[:len(colliders)-1])
             for actor2 in colliders[i+1:]
             if actor1.is_colliding(actor2)
         ]
-        def is_action(action: Action | None) -> TypeIs[Action]:
-            return isinstance(action, Action)
-        return filter(is_action, await asyncio.gather(*futures))
+        return [action for action in await asyncio.gather(*futures) if action]
 
     async def update(self) -> None:
         """
