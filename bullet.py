@@ -2,15 +2,14 @@
 import math
 from pygame import Surface
 import pygame
-from pygame.mixer import Sound
 from action import Action, Collider
 from consts import RESOLUTION
+from sounds import AudioBag
 
 
 class Bullet(Collider):
 
     facet: Surface | None = None
-    sound: Sound | None = None
 
     @classmethod
     def load_assets(cls) -> None:
@@ -18,7 +17,6 @@ class Bullet(Collider):
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
         )
-        cls.sound = Sound('assets/missile.wav')
 
     def __init__(self, pos: tuple[float, float], angle: float) -> None:
         self.x, self.y = pos
@@ -27,8 +25,7 @@ class Bullet(Collider):
 
         if Bullet.facet is None:
             Bullet.load_assets()
-        assert Bullet.sound
-        Bullet.sound.play()
+        AudioBag.bullet.play()
 
     @property
     def xy(self) -> tuple[float, float]:

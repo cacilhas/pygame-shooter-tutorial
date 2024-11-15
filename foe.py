@@ -1,15 +1,14 @@
 from pygame import Surface
 import pygame
-from pygame.mixer import Sound
 from action import Action, Collider
 from bullet import Bullet
 from consts import RESOLUTION
+from sounds import AudioBag
 
 
 class Foe(Collider):
 
     facet: Surface | None = None
-    explosions: list[Sound] = []
 
     @classmethod
     def load_assets(cls) -> None:
@@ -17,10 +16,6 @@ class Foe(Collider):
             pygame.image.load('assets/foe-1.png').convert_alpha(),
             (64, 40),
         )
-        cls.explosions.extend([
-            Sound('assets/explosion1.wav'),
-            Sound('assets/explosion2.wav'),
-        ])
 
     def __init__(self, y: float, speed: float) -> None:
         if Foe.facet is None:
@@ -61,9 +56,9 @@ class Foe(Collider):
             to_remove: list[Collider] = [other]
             if self.hp <= 0:
                 to_remove.append(self)
-                Foe.explosions[1].play()
+                AudioBag.explosions[1].play()
             else:
-                Foe.explosions[0].play()
+                AudioBag.explosions[0].play()
             return Action.remove(*to_remove)
         if jump:
             return

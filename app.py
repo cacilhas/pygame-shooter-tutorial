@@ -10,6 +10,7 @@ from action import Action, Actor, AddActor, Collider, RemoveActor
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
+from sounds import AudioBag
 from spawner import Spawner
 
 
@@ -17,7 +18,7 @@ class App:
 
     def __init__(self) -> None:
         pygame.init()
-        pygame.mixer.init()
+        AudioBag.init()
         self.screen: Surface = pygame.display.set_mode(
             RESOLUTION,
             pygame.NOFRAME | pygame.DOUBLEBUF,
