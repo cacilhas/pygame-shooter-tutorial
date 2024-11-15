@@ -45,6 +45,9 @@ class Action:
     def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
         return isinstance(actor, cls._types.RemoveActor)
 
+    def __len__(self) -> int:
+        return 1
+
 
 class __RemoveActor(Action):
 
@@ -122,7 +125,5 @@ class Collider(Actor):
     def is_colliding(self, other: 'Collider') -> bool:
         return self.distance(other) <= self.radius + other.radius
 
-    async def on_collision(self, other: 'Collider', *, jump: bool=False) -> Action | None:
-        if jump:
-            return
-        return await other.on_collision(self, jump=True)
+    async def on_collision(self, other: 'Collider') -> Action | None:
+        ...

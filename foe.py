@@ -2,7 +2,7 @@ from pygame import Surface
 import pygame
 from action import Action, Collider
 from bullet import Bullet
-from consts import RESOLUTION
+from consts import FPS, RESOLUTION
 from sounds import AudioBag
 
 
@@ -42,7 +42,7 @@ class Foe(Collider):
         if self.x + self.facet.get_width() / 2 < 0:
             return Action.remove(self)
 
-    async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:
+    async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Bullet):
             self.hp -= 1
             if self.hp <= 0:
@@ -54,6 +54,7 @@ class Foe(Collider):
             else:
                 AudioBag.explosions[0].play()
                 return Action.remove(other)
-        if jump:
-            return
-        return await other.on_collision(self, jump=True)
+
+        if isinstance(other, Foe):
+            self.y -= self.speed / FPS
+            other.y += other.speed / FPS

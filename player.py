@@ -104,7 +104,7 @@ class Player(Collider):
         if self.keys[3]:
             self.dx += 1
 
-    async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:
+    async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Foe):
             AudioBag.explosions[1].play()
             return Action.remove(self, other)

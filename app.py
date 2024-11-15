@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from typing import Coroutine, NoReturn
+from typing import Coroutine, Iterable, NoReturn, TypeIs
 import pygame
 from pygame import Surface
 from pygame.constants import K_ESCAPE
@@ -45,7 +45,7 @@ class App:
             Player(),
         ))
 
-    async def check_collisions(self) -> list[Action]:
+    async def check_collisions(self) -> Iterable[Action]:
         """
         Instantiate all collision action objects
         """
@@ -53,17 +53,18 @@ class App:
             actor for actor in self.actors
             if isinstance(actor, Collider)
         ]
-        futures: list[Coroutine] = [
-            actor1.on_collision(actor2)
-            for i, actor1 in enumerate(colliders[:len(colliders)-2])
+        if len(colliders) < 2:
+            return []
+
+        futures: list[Coroutine[None, None, Action | None]] = [
+            actor1.on_collision(actor2) or actor2.on_collision(actor1)
+            for i, actor1 in enumerate(colliders[:len(colliders)-1])
             for actor2 in colliders[i+1:]
             if actor1.is_colliding(actor2)
         ]
-        return [
-            action
-            for action in await asyncio.gather(*futures)
-            if action
-        ]
+        def is_action(action: Action | None) -> TypeIs[Action]:
+            return isinstance(action, Action)
+        return filter(is_action, await asyncio.gather(*futures))
 
     async def update(self) -> None:
         """
