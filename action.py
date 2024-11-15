@@ -40,11 +40,11 @@ class Actor:
 
     @property
     def radius(self) -> float:
-        ...
+        return 0
 
     @property
     def xy(self) -> tuple[float, float]:
-        ...
+        return 1 << 32, 1 << 32
 
     async def update(self, delta: float) -> Action:
         return Action.noAction
@@ -74,14 +74,3 @@ class Collider(Actor):
         if jump:
             return
         return await other.on_collision(self, jump=True)
-
-
-class DarkMatter(Actor):
-
-    @property
-    def radius(self) -> float:
-        return 0
-
-    @property
-    def xy(self) -> tuple[float, float]:
-        return 1 << 32, 1 << 32
