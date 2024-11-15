@@ -127,3 +127,9 @@ class Collider(Actor):
 
     async def on_collision(self, other: 'Collider') -> Action | None:
         ...
+
+    async def _process_collision(self, other: 'Collider') -> Action | None:
+        action = await self.on_collision(other)
+        if action:
+            return action
+        return await other.on_collision(self)

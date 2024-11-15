@@ -49,7 +49,7 @@ class App:
 
     async def check_collisions(self) -> Iterable[Action]:
         """
-        Instantiate all collision action objects
+        Instantiate all collision objects
         """
         colliders: list[Collider] = [
             actor for actor in self.actors
@@ -58,14 +58,8 @@ class App:
         if len(colliders) < 2:
             return []
 
-        async def process_collision(actor1: Collider, actor2: Collider) -> Action | None:
-            action = await actor1.on_collision(actor2)
-            if action:
-                return action
-            return await actor2.on_collision(actor1)
-
         futures: list[Coroutine[None, None, Action | None]] = [
-            process_collision(actor1, actor2)
+            actor1._process_collision(actor2)
             for i, actor1 in enumerate(colliders[:len(colliders)-1])
             for actor2 in colliders[i+1:]
             if actor1.is_colliding(actor2)
@@ -88,7 +82,7 @@ class App:
 
     async def process(self, action: Action) -> None:
         """
-        Process all collcted actions
+        Process all collected actions
         """
         if Action.isActionSet(action):
             async for a in async_gen(action.actions):
