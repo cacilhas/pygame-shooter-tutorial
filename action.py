@@ -70,7 +70,7 @@ class Collider(Actor):
     def is_colliding(self, other: 'Actor') -> bool:
         return self.distance(other) <= self.radius + other.radius
 
-    def collide(self, other: 'Actor') -> Action:
+    async def collide(self, other: 'Actor') -> Action|None:
         return Action.noAction
 
 
