@@ -9,7 +9,7 @@ from sounds import AudioBag
 
 class Bullet(Collider):
 
-    facet: Surface | None = None
+    facet: Surface
 
     @classmethod
     def load_assets(cls) -> None:
@@ -23,7 +23,7 @@ class Bullet(Collider):
         self.angle = angle
         self.speed = 1200.0
 
-        if Bullet.facet is None:
+        if not hasattr(Bullet, 'facet'):
             Bullet.load_assets()
         AudioBag.bullet.play()
 
@@ -36,14 +36,10 @@ class Bullet(Collider):
         return 6
 
     async def draw(self, surface: Surface) -> None:
-        facet = Bullet.facet
-        assert facet
-        self.blit(dest=surface, src=facet)
+        self.blit(dest=surface, src=self.facet)
 
     async def update(self, delta: float) -> Action | None:
-        facet = Bullet.facet
-        assert facet
-        width, height = facet.get_size()
+        width, height = self.facet.get_size()
         speed = self.speed * delta
         dx, dy = math.cos(self.angle) * speed, math.sin(self.angle) * speed
         self.x += dx

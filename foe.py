@@ -8,7 +8,7 @@ from sounds import AudioBag
 
 class Foe(Collider):
 
-    facet: Surface | None = None
+    facet: Surface
 
     @classmethod
     def load_assets(cls) -> None:
@@ -18,11 +18,10 @@ class Foe(Collider):
         )
 
     def __init__(self, y: float, speed: float) -> None:
-        if Foe.facet is None:
+        if not hasattr(Foe, 'facet'):
             Foe.load_assets()
-        assert Foe.facet
 
-        self.x = RESOLUTION[0] + Foe.facet.get_width() / 2
+        self.x = RESOLUTION[0] + self.facet.get_width() / 2
         self.y = y
         self.hp = 3
         self.speed = speed
@@ -36,15 +35,11 @@ class Foe(Collider):
         return 32
 
     async def draw(self, surface: Surface) -> None:
-        facet = Foe.facet
-        assert facet
-        self.blit(dest=surface, src=facet)
+        self.blit(dest=surface, src=self.facet)
 
     async def update(self, delta: float) -> Action | None:
-        facet = Foe.facet
-        assert facet
         self.x -= self.speed * delta
-        if self.x + facet.get_width() / 2 < 0:
+        if self.x + self.facet.get_width() / 2 < 0:
             return Action.remove(self)
 
     async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:

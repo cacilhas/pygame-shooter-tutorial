@@ -12,12 +12,19 @@ from util import async_gen
 
 class Player(Collider):
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.facet = pygame.transform.scale(
+    facet: Surface
+
+    @classmethod
+    def load_assets(cls) -> None:
+        cls.facet = pygame.transform.scale(
             pygame.image.load('assets/player.png').convert_alpha(),
             (64, 64),
         )
+
+    def __init__(self) -> None:
+        if not hasattr(Player, 'facet'):
+            Player.load_assets()
+
         pygame.display.set_icon(self.facet)
         self.keys: list[bool] = [False] * 5
         self.speed: float = 400.0
