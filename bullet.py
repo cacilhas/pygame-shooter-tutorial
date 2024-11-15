@@ -3,11 +3,11 @@ import math
 from pygame import Surface
 import pygame
 from pygame.mixer import Sound
-from action import Action, Actor
+from action import Action, Collider
 from consts import RESOLUTION
 
 
-class Bullet(Actor):
+class Bullet(Collider):
 
     facet: Surface|None = None
     sound: Sound|None = None
@@ -31,8 +31,12 @@ class Bullet(Actor):
         Bullet.sound.play()
 
     @property
-    def pos(self) -> tuple[int, int]:
-        return int(self.x), int(self.y)
+    def xy(self) -> tuple[float, float]:
+        return self.x, self.y
+
+    @property
+    def radius(self) -> float:
+        return 6
 
     async def draw(self, surface: Surface) -> None:
         facet = Bullet.facet

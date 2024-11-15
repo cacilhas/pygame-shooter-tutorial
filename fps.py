@@ -2,10 +2,10 @@ import pygame
 from pygame.event import Event
 from pygame.font import Font
 from pygame.surface import Surface
-from action import Action, Actor
+from action import Action, DarkMatter
 
 
-class FpsDisplay(Actor):
+class FpsDisplay(DarkMatter):
 
     def __init__(self) -> None:
         self.font = Font('assets/digital-7.ttf', 24)

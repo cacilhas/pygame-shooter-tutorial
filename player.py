@@ -2,12 +2,12 @@ import math
 import pygame
 from pygame import Surface
 from pygame.event import Event
-from action import Action, Actor
+from action import Action, Collider
 from bullet import Bullet
 from consts import RESOLUTION
 
 
-class Player(Actor):
+class Player(Collider):
 
     def __init__(self) -> None:
         super().__init__()
@@ -26,11 +26,12 @@ class Player(Actor):
         self.angle: float = 0.0
 
     @property
-    def pos(self) -> tuple[int, int]:
-        return (
-            int(self.x - self.facet.get_width() / 2),
-            int(self.y - self.facet.get_height() / 2),
-        )
+    def radius(self) -> float:
+        return 32
+
+    @property
+    def xy(self) -> tuple[float, float]:
+        return self.x, self.y
 
     async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(

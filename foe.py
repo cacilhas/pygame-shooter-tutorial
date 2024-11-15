@@ -1,10 +1,10 @@
 from pygame import Surface
 import pygame
-from action import Action, Actor
+from action import Action, Collider
 from consts import RESOLUTION
 
 
-class Foe(Actor):
+class Foe(Collider):
 
     facet: Surface|None = None
 
@@ -23,6 +23,14 @@ class Foe(Actor):
         self.x = RESOLUTION[0] + Foe.facet.get_width() / 2
         self.y = y
         self.speed = speed
+
+    @property
+    def xy(self) -> tuple[float, float]:
+        return self.x, self.y
+
+    @property
+    def radius(self) -> float:
+        return 20
 
     async def draw(self, surface: Surface) -> None:
         facet = Foe.facet

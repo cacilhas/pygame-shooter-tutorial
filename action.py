@@ -1,3 +1,4 @@
+import math
 from typing import Any, Callable, Iterable
 from pygame import Surface
 from pygame.event import Event
@@ -34,6 +35,15 @@ class Actor:
 
     @property
     def pos(self) -> tuple[int, int]:
+        x, y = self.xy
+        return int(x), int(y)
+
+    @property
+    def radius(self) -> float:
+        ...
+
+    @property
+    def xy(self) -> tuple[float, float]:
         ...
 
     async def update(self, delta: float) -> Action:
@@ -44,3 +54,32 @@ class Actor:
 
     async def react(self, events: list[Event]) -> None:
         ...
+
+    def squared_distance(self, other: 'Actor') -> float:
+        x0, y0 = self.xy
+        x1, y1 = other.xy
+        dx, dy = x0 - x1, y0 - y1
+        return dx*dx + dy*dy
+
+    def distance(self, other: 'Actor') -> float:
+        return math.sqrt(self.squared_distance(other))
+
+
+class Collider(Actor):
+
+    def is_colliding(self, other: 'Actor') -> bool:
+        return self.distance(other) <= self.radius + other.radius
+
+    def collide(self, other: 'Actor') -> Action:
+        return Action.noAction
+
+
+class DarkMatter(Actor):
+
+    @property
+    def radius(self) -> float:
+        return 0
+
+    @property
+    def xy(self) -> tuple[float, float]:
+        return 1 << 32, 1 << 32
