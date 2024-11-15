@@ -16,6 +16,11 @@ class Action:
     def remove(*actors: 'Actor') -> 'Action':
         return RemoveActor(actors)
 
+    @staticmethod
+    def set(*actions: 'Action') -> 'Action':
+        return ActionSet(actions)
+
+
 Action.noAction = Action()
 
 
@@ -27,8 +32,14 @@ class RemoveActor(Action):
 
 class AddActor(Action):
 
-        def __init__(self, actors: Iterable['Actor']) -> None:
-            self.actors = actors
+    def __init__(self, actors: Iterable['Actor']) -> None:
+        self.actors = actors
+
+
+class ActionSet(Action):
+
+    def __init__(self, actions: Iterable[Action]) -> None:
+        self.actions = actions
 
 
 class Actor:

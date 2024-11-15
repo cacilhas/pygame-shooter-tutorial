@@ -6,7 +6,7 @@ from pygame import Surface
 from pygame.constants import K_ESCAPE
 from pygame.time import Clock
 
-from action import Action, Actor, AddActor, Collider, RemoveActor
+from action import Action, ActionSet, Actor, AddActor, Collider, RemoveActor
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from player import Player
@@ -56,15 +56,25 @@ class App:
         actions = await asyncio.gather(*[actor.update(delta) for actor in self.actors])
         actions.extend(await self.check_collisions())
         for action in actions:
-            if isinstance(action, AddActor):
-                for actor in action.actors:
-                    self.actors.insert(0, actor)
-            elif isinstance(action, RemoveActor):
-                for actor in action.actors:
-                    try:
-                        self.actors.remove(actor)
-                    except ValueError:
-                        print(sys.stderr, f'{actor} was supposed to be in the actors list')
+            await self.process(action)
+
+    async def process(self, action: Action) -> None:
+        if isinstance(action, ActionSet):
+            for action in action.actions:
+                await self.process(action)
+
+        if isinstance(action, AddActor):
+            for actor in action.actors:
+                self.actors.insert(0, actor)
+            return
+
+        if isinstance(action, RemoveActor):
+            for actor in action.actors:
+                try:
+                    self.actors.remove(actor)
+                except ValueError:
+                    print(sys.stderr, f'{actor} was supposed to be in the actors list')
+            return
 
     async def draw(self) -> None:
         self.screen.fill(BACKGROUND)
