@@ -1,12 +1,15 @@
 from pygame import Surface
 import pygame
+from pygame.mixer import Sound
 from action import Action, Collider
+from bullet import Bullet
 from consts import RESOLUTION
 
 
 class Foe(Collider):
 
-    facet: Surface|None = None
+    facet: Surface | None = None
+    explosions: list[Sound] = []
 
     @classmethod
     def load_assets(cls) -> None:
@@ -14,6 +17,10 @@ class Foe(Collider):
             pygame.image.load('assets/foe-1.png').convert_alpha(),
             (64, 40),
         )
+        cls.explosions.extend([
+            Sound('assets/explosion1.wav'),
+            Sound('assets/explosion2.wav'),
+        ])
 
     def __init__(self, y: float, speed: float) -> None:
         if Foe.facet is None:
@@ -22,6 +29,7 @@ class Foe(Collider):
 
         self.x = RESOLUTION[0] + Foe.facet.get_width() / 2
         self.y = y
+        self.hp = 3
         self.speed = speed
 
     @property
@@ -46,3 +54,17 @@ class Foe(Collider):
         if self.x + facet.get_width() / 2 < 0:
             return Action.remove(self)
         return Action.noAction
+
+    async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:
+        if isinstance(other, Bullet):
+            self.hp -= 1
+            to_remove: list[Collider] = [other]
+            if self.hp <= 0:
+                to_remove.append(self)
+                Foe.explosions[1].play()
+            else:
+                Foe.explosions[0].play()
+            return Action.remove(*to_remove)
+        if jump:
+            return
+        return await other.on_collision(self, jump=True)

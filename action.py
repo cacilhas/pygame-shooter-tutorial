@@ -67,11 +67,13 @@ class Actor:
 
 class Collider(Actor):
 
-    def is_colliding(self, other: 'Actor') -> bool:
+    def is_colliding(self, other: 'Collider') -> bool:
         return self.distance(other) <= self.radius + other.radius
 
-    async def collide(self, other: 'Actor') -> Action|None:
-        return Action.noAction
+    async def on_collision(self, other: 'Collider', *, jump: bool=False) -> Action | None:
+        if jump:
+            return
+        return await other.on_collision(self, jump=True)
 
 
 class DarkMatter(Actor):

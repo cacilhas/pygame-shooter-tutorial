@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from typing import Coroutine, NoReturn
 import pygame
 from pygame import Surface
@@ -39,15 +40,14 @@ class App:
             if isinstance(actor, Collider)
         ]
         futures: list[Coroutine] = [
-            actor1.collide(actor2)
+            actor1.on_collision(actor2)
             for i, actor1 in enumerate(colliders[:len(colliders)-2])
             for actor2 in colliders[i+1:]
             if actor1.is_colliding(actor2)
         ]
-        actions: list[Action] = await asyncio.gather(*futures)
         return [
-            action for action in actions
-            if action is not Action.noAction
+            action for action in await asyncio.gather(*futures)
+            if action and action is not Action.noAction
         ]
 
     async def update(self) -> None:
@@ -60,7 +60,10 @@ class App:
                     self.actors.insert(0, actor)
             elif isinstance(action, RemoveActor):
                 for actor in action.actors:
-                    self.actors.remove(actor)
+                    try:
+                        self.actors.remove(actor)
+                    except ValueError:
+                        print(sys.stderr, f'{actor} was supposed to be in the actors list')
 
     async def draw(self) -> None:
         self.screen.fill(BACKGROUND)

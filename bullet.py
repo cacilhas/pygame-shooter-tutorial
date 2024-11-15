@@ -9,8 +9,8 @@ from consts import RESOLUTION
 
 class Bullet(Collider):
 
-    facet: Surface|None = None
-    sound: Sound|None = None
+    facet: Surface | None = None
+    sound: Sound | None = None
 
     @classmethod
     def load_assets(cls) -> None:
