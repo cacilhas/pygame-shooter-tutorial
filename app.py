@@ -92,20 +92,16 @@ class App:
             return
 
         if Action.isAddActor(action):
-            for actor in action.actors:
-                self.actors.insert(0, actor)
-            return
+            self.actors.insert(0, action.actor)
 
         if Action.isIncrScore(action):
             self.score += action.value
 
         if Action.isRemoveActor(action):
-            for actor in action.actors:
-                try:
-                    self.actors.remove(actor)
-                except ValueError:
-                    print(sys.stderr, f'{actor} was supposed to be in the actors list')
-            return
+            try:
+                self.actors.remove(action.actor)
+            except ValueError:
+                print(sys.stderr, f'{action.actor} was supposed to be in the actors list')
 
     async def draw(self) -> None:
         """

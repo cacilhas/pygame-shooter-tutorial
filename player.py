@@ -109,6 +109,7 @@ class Player(Collider):
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Foe):
             return Action.set(
-                Action.remove(self, other),
+                Action.remove(self),
+                Action.remove(other),
                 Action.register(Explosion(pos=self.pos, size=120)),
             )

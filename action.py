@@ -17,12 +17,12 @@ class Action:
     __RemoveActor: 'type[__RemoveActor]'
 
     @classmethod
-    def register(cls, *actors: 'Actor') -> 'Action':
-        return cls.__AddActor(actors)
+    def register(cls, actor: 'Actor') -> 'Action':
+        return cls.__AddActor(actor)
 
     @classmethod
-    def remove(cls, *actors: 'Actor') -> 'Action':
-        return cls.__RemoveActor(actors)
+    def remove(cls, actor: 'Actor') -> 'Action':
+        return cls.__RemoveActor(actor)
 
     @classmethod
     def set(cls, *actions: 'Action') -> 'Action':
@@ -60,15 +60,15 @@ def register_subclass[T](cls: type[T]) -> type[T]:
 @register_subclass
 class __RemoveActor(Action):
 
-    def __init__(self, actors: Iterable['Actor']) -> None:
-        self.actors = actors
+    def __init__(self, actor: 'Actor') -> None:
+        self.actor = actor
 
 
 @register_subclass
 class __AddActor(Action):
 
-    def __init__(self, actors: Iterable['Actor']) -> None:
-        self.actors = actors
+    def __init__(self, actor: 'Actor') -> None:
+        self.actor = actor
 
 
 @register_subclass
