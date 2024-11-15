@@ -42,7 +42,7 @@ class Bullet(Collider):
         y = int(self.y - facet.get_height() / 2)
         surface.blit(facet, (x, y))
 
-    async def update(self, delta: float) -> Action:
+    async def update(self, delta: float) -> Action | None:
         facet = Bullet.facet
         assert facet
         width, height = facet.get_size()
@@ -55,4 +55,3 @@ class Bullet(Collider):
             return Action.remove(self)
         if not -height / 2 < self.y < RESOLUTION[1] + height / 2:
             return Action.remove(self)
-        return Action.noAction

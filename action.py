@@ -6,8 +6,6 @@ from pygame.event import Event
 
 class Action:
 
-    noAction: 'Action'
-
     @staticmethod
     def register(*actors: 'Actor') -> 'Action':
         return AddActor(actors)
@@ -19,9 +17,6 @@ class Action:
     @staticmethod
     def set(*actions: 'Action') -> 'Action':
         return ActionSet(actions)
-
-
-Action.noAction = Action()
 
 
 class RemoveActor(Action):
@@ -57,8 +52,8 @@ class Actor:
     def xy(self) -> tuple[float, float]:
         return 1 << 32, 1 << 32
 
-    async def update(self, delta: float) -> Action:
-        return Action.noAction
+    async def update(self, delta: float) -> Action | None:
+        ...
 
     async def draw(self, surface: Surface) -> None:
         ...

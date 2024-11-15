@@ -42,13 +42,12 @@ class Foe(Collider):
         y = int(self.y - facet.get_height() / 2)
         surface.blit(facet, (x, y))
 
-    async def update(self, delta: float) -> Action:
+    async def update(self, delta: float) -> Action | None:
         facet = Foe.facet
         assert facet
         self.x -= self.speed * delta
         if self.x + facet.get_width() / 2 < 0:
             return Action.remove(self)
-        return Action.noAction
 
     async def on_collision(self, other: Collider, *, jump: bool=False) -> Action | None:
         if isinstance(other, Bullet):

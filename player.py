@@ -45,7 +45,7 @@ class Player(Collider):
         y = int(self.y - facet.get_height() / 2)
         surface.blit(facet, (x, y))
 
-    async def update(self, delta: float) -> Action:
+    async def update(self, delta: float) -> Action | None:
         self.no_fire = max([0, self.no_fire - delta])
         self.x += self.speed * self.dx * delta
         self.y += self.speed * self.dy * delta
@@ -58,7 +58,6 @@ class Player(Collider):
             self.no_fire = 0.125
             pos = self.x, self.y
             return Action.register(Bullet(pos, self.angle))
-        return Action.noAction
 
     async def react(self, events: list[Event]) -> None:
         for event in (ev for ev in events if ev.type == pygame.KEYUP):

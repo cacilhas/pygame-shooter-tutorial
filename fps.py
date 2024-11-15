@@ -12,10 +12,9 @@ class FpsDisplay(Actor):
         self.text = 'FPS: 0.0'
         self.present = False
 
-    async def update(self, delta: float) -> Action:
+    async def update(self, delta: float) -> Action | None:
         fps = 1 / delta
         self.text = f'FPS: {fps:.1f}'
-        return Action.noAction
 
     async def react(self, events: list[Event]) -> None:
         for event in events:
@@ -25,6 +24,6 @@ class FpsDisplay(Actor):
 
     async def draw(self, surface: Surface) -> None:
         if self.present:
-            text = self.font.render(self.text, True, 'black')
+            text = self.font.render(self.text, True, 'white')
             x = surface.get_width() - text.get_width() - 5
             surface.blit(text, (x, 5))

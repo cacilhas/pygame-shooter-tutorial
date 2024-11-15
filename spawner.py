@@ -10,7 +10,7 @@ class Spawner(Actor):
         self.wait_time: float = 0.0
         self.max_wait_time: float = 5.0
 
-    async def update(self, delta: float) -> Action:
+    async def update(self, delta: float) -> Action | None:
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
         if self.wait_time == 0:
@@ -19,4 +19,3 @@ class Spawner(Actor):
             y = randint(10, RESOLUTION[1] - 10)
             speed = 200 + random() * 200
             return Action.register(Foe(y, speed))
-        return Action.noAction

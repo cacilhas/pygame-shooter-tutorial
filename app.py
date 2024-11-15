@@ -28,6 +28,7 @@ class App:
             vsync=1,
         )
         self.clock = Clock()
+        self.score = 0
         self.actors: list[Actor] = []
         self.populate()
 
@@ -50,13 +51,14 @@ class App:
             if actor1.is_colliding(actor2)
         ]
         return [
-            action for action in await asyncio.gather(*futures)
-            if action and action is not Action.noAction
+            action
+            for action in await asyncio.gather(*futures)
+            if action
         ]
 
     async def update(self) -> None:
         delta: float = self.clock.tick(FPS) / 1000
-        actions = await asyncio.gather(*(
+        actions: list[Action | None] = await asyncio.gather(*(
             actor.update(delta)
             for actor in self.actors
         ))
@@ -64,6 +66,7 @@ class App:
         await asyncio.gather(*(
             self.process(action)
             for action in actions
+            if action
         ))
 
     async def process(self, action: Action) -> None:
