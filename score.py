@@ -18,7 +18,7 @@ class Score(Actor):
         self.z = 20
 
     async def update(self, delta: float) -> Action | None:
-        self.text = f'Score: {self.app.score:4d}'
+        self.text = f'Score: {self.app.score:5d}'
 
     async def draw(self, surface: Surface) -> None:
         text = self.font.render(self.text, True, 'white')
