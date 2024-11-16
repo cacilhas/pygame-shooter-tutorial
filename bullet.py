@@ -21,7 +21,7 @@ class Bullet(Collider):
         laser.fill('red')
         cls.facets.extend([bullet, bullet, laser])
 
-    def __init__(self, pos: tuple[float, float], angle: float, *, power: int) -> None:
+    def __init__(self, pos: tuple[float, float], angle: float, *, power: int, sound: bool=True) -> None:
         self.x, self.y = pos
         self.angle = angle
         self.speed = 1200.0
@@ -30,7 +30,10 @@ class Bullet(Collider):
             self.load_assets()
         self.facet = self.facets[power]
         self.power = power
-        AudioBag.bullet.play()
+        if self.power == 2:
+            AudioBag.laser.play()
+        elif sound:
+            AudioBag.bullet.play()
 
     @property
     def xy(self) -> tuple[float, float]:
@@ -52,8 +55,8 @@ class Bullet(Collider):
             # Triple bullet
             self.power = 0
             return Action.set(
-                Action.register(Bullet(self.xy, self.angle - math.pi/12, power=0)),
-                Action.register(Bullet(self.xy, self.angle + math.pi/12, power=0)),
+                Action.register(Bullet(self.xy, self.angle - math.pi/12, power=0, sound=False)),
+                Action.register(Bullet(self.xy, self.angle + math.pi/12, power=0, sound=False)),
             )
 
         width, height = self.facet.get_size()
