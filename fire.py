@@ -19,8 +19,8 @@ class Fire(Collider):
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
         )
-        laser = Surface((24, 2))
-        laser.fill('red')
+        laser = Surface((24, 24))
+        pygame.draw.line(laser, 'red', (0,12), (24,12), 2)
         cls.facets.extend([bullet, bullet, laser])
 
     def __init__(self, pos: tuple[float, float], angle: float, *, power: int, sound: bool=True) -> None:
@@ -60,7 +60,11 @@ class Fire(Collider):
                 return 6
 
     async def draw(self, surface: Surface) -> None:
-        self.blit(dest=surface, src=self.facet)
+        if self.power == 2:
+            facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
+        else:
+            facet = self.facet
+        self.blit(dest=surface, src=facet)
 
     async def update(self, delta: float) -> Action | None:
         if self.power == 1:
