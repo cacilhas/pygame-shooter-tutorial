@@ -14,6 +14,7 @@ class Foe(Collider):
     channel: Channel
     x: float
     y: float
+    dy: float
     speed: float
 
     def __new__(cls, y: float, speed: float) -> 'Foe':
@@ -45,7 +46,8 @@ class RocketFoe(Foe):
 
         self.x = RESOLUTION[0] + self.facet.get_width() / 2
         self.y = y
-        self.hp = 3
+        self.dy: float = 0.0
+        self.hp: int = 3
         self.speed = speed
 
     @property
@@ -57,6 +59,8 @@ class RocketFoe(Foe):
 
     async def update(self, delta: float) -> Action | None:
         self.x -= self.speed * delta
+        self.y += self.dy
+        self.dy -= self.dy * delta
         if self.x + self.facet.get_width() / 2 < 0:
             return Action.remove(self)
 
@@ -75,5 +79,9 @@ class RocketFoe(Foe):
                 return Action.remove(other)
 
         if isinstance(other, Foe):
-            self.y -= self.speed / FPS
-            other.y += other.speed / FPS
+            if self.y < other.y:
+                self.dy = -4
+                other.dy = 4
+            else:
+                self.dy = 4
+                other.dy = -4
