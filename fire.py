@@ -19,7 +19,7 @@ class Fire(Collider):
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
         )
-        laser = Surface((24, 24))
+        laser = Surface((24, 24), pygame.SRCALPHA)
         pygame.draw.line(laser, 'red', (0,12), (24,12), 2)
         cls.facets.extend([bullet, bullet, laser])
 
