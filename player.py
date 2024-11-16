@@ -7,6 +7,7 @@ from consts import RESOLUTION
 from explosion import Explosion
 from fire import Fire
 from foe import Foe
+from meteor import Meteor
 from sounds import AudioBag
 from util import async_gen
 
@@ -112,5 +113,10 @@ class Player(Collider):
             return Action.set(
                 Action.remove(self),
                 Action.remove(other),
+                Action.register(Explosion(pos=self.pos, size=120)),
+            )
+        if isinstance(other, Meteor):
+            return Action.set(
+                Action.remove(self),
                 Action.register(Explosion(pos=self.pos, size=120)),
             )

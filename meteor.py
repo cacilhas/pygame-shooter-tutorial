@@ -7,7 +7,6 @@ from consts import RESOLUTION
 from explosion import Explosion
 from fire import Fire
 from foe import Foe
-from player import Player
 from sounds import AudioBag
 
 
@@ -53,14 +52,11 @@ class Meteor(Collider):
         self.blit(dest=surface, src=facet)
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (Player, Foe, Fire)):
+        if isinstance(other, (Foe, Fire)):
             actions: list[Action] = [Action.remove(other)]
 
             if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, Foe):
                 AudioBag.explosions[0].play()
                 actions.append(Action.register(Explosion(pos=other.pos, size=72)))
-            elif isinstance(other, Player):
-                AudioBag.explosions[1].play()
-                actions.append(Action.register(Explosion(pos=other.pos, size=120)))
 
             return Action.set(*actions)
