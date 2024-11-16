@@ -29,14 +29,10 @@ class Lives(Actor):
         self.max: int = self.app.lives - 1
         self.width, self.height = self.facet.get_size()
 
-    @property
-    def xy(self) -> tuple[float, float]:
-        return RESOLUTION[0] / 2.0, self.height / 2.0
-
     async def draw(self, surface: Surface) -> None:
         extra_lifes = self.app.lives - 1
         if extra_lifes > 0:
             facet = Surface((self.width * self.max, self.height), pygame.SRCALPHA)
             for i in range(extra_lifes):
                 facet.blit(self.facet, (i *self.width, 0))
-            self.blit(dest=surface, src=facet)
+            surface.blit(facet,(5, RESOLUTION[1] - self.height - 5.0))

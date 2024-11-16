@@ -37,6 +37,7 @@ class App:
             vsync=1,
         )
         self.paused_display = Paused()
+        pygame.mixer_music.load('assets/song.mp3')
 
     def populate(self) -> None:
         """
@@ -52,6 +53,8 @@ class App:
             Player(),
             Lives(self),
         ))
+        pygame.mixer_music.play(-1)
+        pygame.mixer_music.set_volume(1.0)
 
     async def check_collisions(self) -> Iterable[Action]:
         """
