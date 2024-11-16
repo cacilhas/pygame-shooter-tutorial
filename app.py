@@ -4,13 +4,14 @@ import sys
 from typing import Coroutine, DefaultDict, Iterable, NoReturn, TypeIs
 import pygame
 from pygame import Surface
-from pygame.constants import K_ESCAPE
+from pygame.constants import K_ESCAPE, K_PAUSE, KEYUP
 from pygame.time import Clock
 
 from action import Action, Actor, Collider
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from gameover import GameOver
+from paused import Paused
 from player import Player
 from score import Score
 from sounds import AudioBag
@@ -33,6 +34,7 @@ class App:
             | pygame.SCALED,
             vsync=1,
         )
+        self.paused_display = Paused()
 
     def populate(self) -> None:
         """
@@ -72,16 +74,17 @@ class App:
         Perform update for all actors and collect their actions
         """
         delta: float = self.clock.tick(FPS) / 1000
-        actions: list[Action | None] = await asyncio.gather(*(
-            actor.update(delta)
-            for actor in self.actors
-        ))
-        actions.extend(await self.check_collisions())
-        await asyncio.gather(*(
-            self.process(action)
-            for action in actions
-            if action
-        ))
+        if not self.paused:
+            actions: list[Action | None] = await asyncio.gather(*(
+                actor.update(delta)
+                for actor in self.actors
+            ))
+            actions.extend(await self.check_collisions())
+            await asyncio.gather(*(
+                self.process(action)
+                for action in actions
+                if action
+            ))
 
     async def process(self, action: Action) -> None:
         """
@@ -138,8 +141,14 @@ class App:
                 import sys
                 pygame.quit()
                 sys.exit()
-            if self.game_over and event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
+            elif self.game_over and event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
                 self.reset = True
+            elif (not self.game_over) and event.type == pygame.KEYUP and event.key in [pygame.K_p, pygame.K_PAUSE]:
+                self.paused = not self.paused
+                if self.paused:
+                    self.actors.append(self.paused_display)
+                else:
+                    self.actors.remove(self.paused_display)
         await asyncio.gather(*(actor.react(events) for actor in self.actors))
 
     async def start(self) -> NoReturn:
@@ -150,6 +159,7 @@ class App:
             self.lives: int = 1  # TODO: 3
             self.reset: bool = False
             self.game_over: bool = False
+            self.paused: bool = False
             self.populate()
 
             while not self.reset:
