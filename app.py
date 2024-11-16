@@ -13,7 +13,7 @@ from fps import FpsDisplay
 from player import Player
 from score import Score
 from sounds import AudioBag
-from spawner import Spawner
+from spawner import FoeSpawner, PowerUpSpawner
 from stars import StarsBackground
 
 
@@ -42,7 +42,8 @@ class App:
         """
         self.actors.extend((
             StarsBackground(),
-            Spawner(),
+            FoeSpawner(),
+            PowerUpSpawner(),
             FpsDisplay(),
             Score(self),
             Player(),

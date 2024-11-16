@@ -16,3 +16,6 @@ class AudioBag:
             Sound('assets/explosion1.wav'),
             Sound('assets/explosion2.wav'),
         ]
+        cls.catch = Sound('assets/catch.wav')
+        cls.power_up = Sound('assets/power-up.wav')
+        cls.power_down = Sound('assets/power-down.wav')
