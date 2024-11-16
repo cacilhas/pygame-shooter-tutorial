@@ -12,6 +12,7 @@ class Reload(Actor):
         if self.delay <= 0:
             return Action.set(
                 Action.remove(self),
+                Action.decr_lives(),
                 Action.register(Player()),
             )
         return Action.remove_if(lambda actor: isinstance(actor, Collider))

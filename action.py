@@ -13,12 +13,17 @@ class Action:
 
     __ActionSet: 'type[__ActionSet]'
     __AddActor: 'type[__AddActor]'
+    __DecreaseLives: 'type[__DecreaseLives]'
     __IncrScore: 'type[__IncrScore]'
     __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
     __RemoveIf: 'type[__RemoveIf]'
 
     #-----#
+
+    @classmethod
+    def decr_lives(cls) -> 'Action':
+        return cls.__DecreaseLives()
 
     @classmethod
     def incr_score(cls, value: int) -> 'Action':
@@ -45,6 +50,10 @@ class Action:
         return cls.__ActionSet(actions)
 
     #-----#
+
+    @classmethod
+    def isDecreaseLives(cls, actor) -> 'TypeIs[__DecreaseLives]':
+        return isinstance(actor, cls.__DecreaseLives)
 
     @classmethod
     def isActionSet(cls, actor) -> 'TypeIs[__ActionSet]':
@@ -91,6 +100,12 @@ class __AddActor(Action):
 
     def __init__(self, actor: 'Actor') -> None:
         self.actor = actor
+
+
+@register_subclass
+class __DecreaseLives(Action):
+
+    ...
 
 
 @register_subclass

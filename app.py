@@ -101,9 +101,13 @@ class App:
             self.actors.insert(0, action.actor)
             return
 
-        if Action.isPlayerHit(action):
+        if Action.isDecreaseLives(action):
             self.lives -= 1
-            if self.lives <= 0:
+            return
+
+        if Action.isPlayerHit(action):
+            if self.lives <= 1:
+                self.lives -= 1
                 self.actors.append(GameOver())
                 self.game_over = True
             else:
