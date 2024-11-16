@@ -4,6 +4,7 @@ from random import random
 from pygame import Surface
 import pygame
 from pygame.font import Font
+from pygame.mixer import Channel
 from action import Action, Collider
 from consts import RESOLUTION
 from player import Player
@@ -13,10 +14,12 @@ from sounds import AudioBag
 class PowerUp(Collider):
 
     facets: list[Surface] = []
+    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
         font = Font('assets/digital-7.ttf', 48)
+        cls.channel = Channel(3)
         for i, color in enumerate(colors):
             facet = Surface((48, 48), pygame.SRCALPHA)
             pygame.draw.circle(facet, color[0], (24, 24), 24)
@@ -58,11 +61,11 @@ class PowerUp(Collider):
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Player):
             if other.power < self.power:
-                AudioBag.power_up.play()
+                self.channel.play(AudioBag.power_up)
             elif other.power > self.power:
-                AudioBag.power_down.play()
+                self.channel.play(AudioBag.power_down)
             else:
-                AudioBag.catch.play()
+                self.channel.play(AudioBag.catch)
 
             other.power = self.power
             return Action.set(

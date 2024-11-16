@@ -1,9 +1,9 @@
 
 import math
 from random import random
-from re import L
 from pygame import Surface
 import pygame
+from pygame.mixer import Channel
 from action import Action, Collider
 from consts import RESOLUTION
 from sounds import AudioBag
@@ -12,9 +12,11 @@ from sounds import AudioBag
 class Fire(Collider):
 
     facets: list[Surface] = []
+    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
+        cls.channel = Channel(1)
         bullet = pygame.transform.scale(
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
@@ -41,17 +43,17 @@ class Fire(Collider):
         match power:
             case 1:
                 if sound:
-                    AudioBag.bullet.play()
+                    self.channel.play(AudioBag.bullet)
                 self.delay = 0.1875
 
             case 2 | 3:
                 if sound and random() < 0.25:
-                    AudioBag.laser.play()
+                    self.channel.play(AudioBag.laser)
                 self.delay = 0.0
 
             case _:
                 if sound:
-                    AudioBag.bullet.play()
+                    self.channel.play(AudioBag.bullet)
                 self.delay = 0.125
 
     @property

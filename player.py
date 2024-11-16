@@ -8,7 +8,6 @@ from explosion import Explosion
 from fire import Fire
 from foe import Foe
 from meteor import Meteor
-from sounds import AudioBag
 from util import async_gen
 
 
