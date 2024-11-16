@@ -12,6 +12,25 @@ class Foe(Collider):
 
     facet: Surface
     channel: Channel
+    x: float
+    y: float
+    speed: float
+
+    def __new__(cls, y: float, speed: float) -> 'Foe':
+        if not hasattr(Foe, 'channel'):
+            cls.channel = Channel(2)
+
+        return RocketFoe(y, speed)
+
+    @property
+    def xy(self) -> tuple[float, float]:
+        return self.x, self.y
+
+
+class RocketFoe(Foe):
+
+    def __new__(cls, y: float, speed: float) -> 'Foe':
+        return Collider.__new__(cls)
 
     @classmethod
     def load_assets(cls) -> None:
@@ -19,20 +38,15 @@ class Foe(Collider):
             pygame.image.load('assets/foe-1.png').convert_alpha(),
             (64, 40),
         )
-        cls.channel = Channel(2)
 
     def __init__(self, y: float, speed: float) -> None:
-        if not hasattr(Foe, 'facet'):
-            Foe.load_assets()
+        if not hasattr(RocketFoe, 'facet'):
+            self.load_assets()
 
         self.x = RESOLUTION[0] + self.facet.get_width() / 2
         self.y = y
         self.hp = 3
         self.speed = speed
-
-    @property
-    def xy(self) -> tuple[float, float]:
-        return self.x, self.y
 
     @property
     def radius(self) -> float:
