@@ -11,6 +11,7 @@ from action import Action, Actor, Collider
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from gameover import GameOver
+from life import Lives
 from paused import Paused
 from player import Player
 from reload import Reload
@@ -49,6 +50,7 @@ class App:
             FpsDisplay(),
             Score(self),
             Player(),
+            Lives(self),
         ))
 
     async def check_collisions(self) -> Iterable[Action]:
