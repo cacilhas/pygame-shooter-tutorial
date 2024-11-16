@@ -1,10 +1,9 @@
 import asyncio
 import random
 import sys
-from typing import Coroutine, DefaultDict, Iterable, NoReturn, TypeIs
+from typing import Coroutine, DefaultDict, Iterable, NoReturn
 import pygame
 from pygame import Surface
-from pygame.constants import K_ESCAPE, K_PAUSE, KEYUP
 from pygame.time import Clock
 
 from action import Action, Actor, Collider
