@@ -182,8 +182,10 @@ class App:
                 self.paused = not self.paused
                 if self.paused:
                     self.actors.append(self.paused_display)
+                    pygame.mixer_music.pause()
                 else:
                     self.actors.remove(self.paused_display)
+                    pygame.mixer_music.unpause()
         await asyncio.gather(*(actor.react(events) for actor in self.actors))
 
     async def start(self) -> NoReturn:
