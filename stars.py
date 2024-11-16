@@ -23,7 +23,7 @@ class StarsBackground(Actor):
             Surface(RESOLUTION, pygame.SRCALPHA),
             Surface(RESOLUTION, pygame.SRCALPHA),
         ]
-        self.speeds: list[float] = [10.0, 20.0, 40.0]
+        self.speeds: list[float] = [20.0, 40.0, 60.0]
         self.xs: list[float] = [10.0, 0.0, 0.0]
 
         for i, facet in enumerate(facets):

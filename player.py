@@ -64,9 +64,9 @@ class Player(Collider):
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
 
         if self.keys[4] and self.no_fire == 0:
-            self.no_fire = no_fire_timeout[self.power]
-            pos = self.x, self.y
-            return Action.register(Bullet(pos, self.angle, power=self.power))
+            fire = Bullet(self.xy, self.angle, power=self.power)
+            self.no_fire = fire.delay
+            return Action.register(fire)
 
     async def react(self, events: list[Event]) -> None:
         async for event in async_gen(ev for ev in events if ev.type == pygame.KEYUP):
@@ -114,10 +114,3 @@ class Player(Collider):
                 Action.remove(other),
                 Action.register(Explosion(pos=self.pos, size=120)),
             )
-
-
-no_fire_timeout: list[float] = [
-    0.125,  # bullet
-    0.125,  # triple bullet
-    0.0,  # laser
-]

@@ -1,5 +1,7 @@
 
 import math
+from random import random
+from re import L
 from pygame import Surface
 import pygame
 from action import Action, Collider
@@ -30,10 +32,20 @@ class Bullet(Collider):
             self.load_assets()
         self.facet = self.facets[power]
         self.power = power
-        if self.power == 2:
-            AudioBag.laser.play()
-        elif sound:
-            AudioBag.bullet.play()
+
+        match power:
+            case 1:
+                AudioBag.bullet.play()
+                self.delay = 0.1875
+
+            case 2:
+                if random() < 0.25:
+                    AudioBag.laser.play()
+                self.delay = 0.0
+
+            case _:
+                AudioBag.bullet.play()
+                self.delay = 0.125
 
     @property
     def xy(self) -> tuple[float, float]:

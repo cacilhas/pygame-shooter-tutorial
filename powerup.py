@@ -29,9 +29,9 @@ class PowerUp(Collider):
             self.load_assets()
 
         power = 0
-        if random() < 0.25:
+        if random() < 0.75:
             power = 1
-            if random() < 0.25:
+            if random() < 0.125:
                 power = 2
 
         self.facet = self.facets[power]

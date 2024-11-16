@@ -15,9 +15,8 @@ class FoeSpawner(Actor):
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
         if self.wait_time == 0:
-            if self.max_wait_time > 0:
-                self.wait_time = random() * self.max_wait_time
-                self.max_wait_time = max(0, self.max_wait_time - 0.06125)
+            self.wait_time = random() * self.max_wait_time
+            self.max_wait_time = max(0.25, self.max_wait_time - 0.06125)
             y = randint(10, RESOLUTION[1] - 10)
             speed = 200 + random() * 200
             return Action.register(Foe(y, speed))

@@ -23,6 +23,7 @@ class App:
         random.seed()
         pygame.init()
         AudioBag.init()
+        pygame.mouse.set_visible(False)
         pygame.display.set_caption('Simple PyGame Shooter')
         self.screen: Surface = pygame.display.set_mode(
             RESOLUTION,
