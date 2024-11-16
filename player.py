@@ -59,6 +59,7 @@ class Player(Collider):
             self.previous_power = self._power
         if value == 4:
             self.shots = 5
+        self.no_fire = 0.0
         self._power = value
 
     async def draw(self, surface: Surface) -> None:
@@ -84,6 +85,7 @@ class Player(Collider):
                 self.shots -= 1
                 if self.shots <= 0:
                     self._power = self.previous_power
+                    self.no_fire = 0.0
             return Action.register(fire)
 
     async def react(self, events: list[Event]) -> None:
