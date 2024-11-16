@@ -1,10 +1,12 @@
 from pygame import Surface
 import pygame
+from pygame.math import clamp
 from pygame.mixer import Channel
 from action import Action, Collider
 from consts import FPS, RESOLUTION
 from explosion import Explosion
 from fire import Fire
+from foe_sensor import FoeSensor
 from sounds import AudioBag
 
 
@@ -49,6 +51,7 @@ class RocketFoe(Foe):
         self.dy: float = 0.0
         self.hp: int = 3
         self.speed = speed
+        self.sensor: FoeSensor | None = None
 
     @property
     def radius(self) -> float:
@@ -58,8 +61,12 @@ class RocketFoe(Foe):
         self.blit(dest=surface, src=self.facet)
 
     async def update(self, delta: float) -> Action | None:
+        if self.sensor is None:
+            self.sensor = FoeSensor(self)
+            return Action.register(self.sensor)
+
         self.x -= self.speed * delta
-        self.y += self.dy
+        self.y += clamp(self.dy, -100, 100) * delta
         self.dy -= self.dy * delta
         if self.x + self.facet.get_width() / 2 < 0:
             return Action.remove(self)
@@ -80,8 +87,12 @@ class RocketFoe(Foe):
 
         if isinstance(other, Foe):
             if self.y < other.y:
-                self.dy = -4
-                other.dy = 4
+                self.dy = -100
+                other.dy = 100
             else:
-                self.dy = 4
-                other.dy = -4
+                self.dy = 100
+                other.dy = -100
+
+    async def on_close(self) -> Action | None:
+        if self.sensor:
+            return Action.remove(self.sensor)

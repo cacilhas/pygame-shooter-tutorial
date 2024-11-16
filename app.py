@@ -36,6 +36,7 @@ class App:
             vsync=1,
         )
         self.paused_display = Paused()
+        self.actions: list[Action | None] = []
         pygame.mixer_music.load('assets/song.mp3')
 
     def populate(self) -> None:
@@ -80,16 +81,21 @@ class App:
         """
         delta: float = self.clock.tick(FPS) / 1000
         if not self.paused:
-            actions: list[Action | None] = await asyncio.gather(*(
+            self.actions = await asyncio.gather(*(
                 actor.update(delta)
                 for actor in self.actors
             ))
-            actions.extend(await self.check_collisions())
-            await asyncio.gather(*(
-                self.process(action)
-                for action in actions
-                if action
-            ))
+            self.actions.extend(await self.check_collisions())
+            self.actions = [action for action in self.actions if action]
+
+            while self.actions:
+                actions = self.actions
+                self.actions = []
+                await asyncio.gather(*(
+                    self.process(action)
+                    for action in actions
+                    if action
+                ))
 
     async def process(self, action: Action) -> None:
         """
@@ -125,12 +131,19 @@ class App:
                 self.actors.remove(action.actor)
             except ValueError:
                 print(sys.stderr, f'{action.actor} was supposed to be in the actors list')
+            on_close = await action.actor.on_close()
+            if on_close:
+                self.actions.append(on_close)
             return
 
         if Action.isRemoveIf(action):
             actors: list[Actor] = []
             for actor in self.actors:
-                if not action.check(actor):
+                if action.check(actor):
+                    on_close = await actor.on_close()
+                    if on_close:
+                        self.actions.append(on_close)
+                else:
                     actors.append(actor)
             self.actors = actors
 

@@ -90,7 +90,5 @@ class Fire(Collider):
         self.x += dx
         self.y += dy
 
-        if not -width / 2 < self.x < RESOLUTION[0] + width / 2:
-            return Action.remove(self)
-        if not -height / 2 < self.y < RESOLUTION[1] + height / 2:
+        if self.x > RESOLUTION[0] + width / 2:
             return Action.remove(self)
