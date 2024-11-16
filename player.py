@@ -37,7 +37,9 @@ class Player(Collider):
         self.dy: float = 0.0
         self.dangle: float = 0.0
         self.angle: float = 0.0
-        self.power: int = 0
+        self._power: int = 0
+        self.previous_power: int = 0
+        self.shots: int = 0
 
     @property
     def radius(self) -> float:
@@ -46,6 +48,18 @@ class Player(Collider):
     @property
     def xy(self) -> tuple[float, float]:
         return self.x, self.y
+
+    @property
+    def power(self) -> int:
+        return self._power
+
+    @power.setter
+    def power(self, value: int) -> None:
+        if self._power not in [value, 4]:
+            self.previous_power = self._power
+        if value == 4:
+            self.shots = 5
+        self._power = value
 
     async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(
@@ -66,6 +80,10 @@ class Player(Collider):
         if self.keys[4] and self.no_fire == 0:
             fire = Fire(self.xy, self.angle, power=self.power)
             self.no_fire = fire.delay
+            if self.power == 4:
+                self.shots -= 1
+                if self.shots <= 0:
+                    self._power = self.previous_power
             return Action.register(fire)
 
     async def react(self, events: list[Event]) -> None:

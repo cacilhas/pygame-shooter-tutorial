@@ -113,6 +113,12 @@ class App:
             self.lives -= 1
             return
 
+        if Action.isForEach(action):
+            for actor in self.actors:
+                res = action.cb(actor)
+                if res:
+                    self.actions.append(res)
+
         if Action.isPlayerHit(action):
             if self.lives <= 1:
                 self.lives -= 1

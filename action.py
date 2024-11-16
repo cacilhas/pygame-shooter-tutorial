@@ -14,6 +14,7 @@ class Action:
     __ActionSet: 'type[__ActionSet]'
     __AddActor: 'type[__AddActor]'
     __DecreaseLives: 'type[__DecreaseLives]'
+    __ForEach: 'type[__ForEach]'
     __IncrScore: 'type[__IncrScore]'
     __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
@@ -24,6 +25,10 @@ class Action:
     @classmethod
     def decr_lives(cls) -> 'Action':
         return cls.__DecreaseLives()
+
+    @classmethod
+    def for_each(cls, cb: Callable[['Actor'], 'Action | None']):
+        return cls.__ForEach(cb)
 
     @classmethod
     def incr_score(cls, value: int) -> 'Action':
@@ -52,32 +57,36 @@ class Action:
     #-----#
 
     @classmethod
-    def isDecreaseLives(cls, actor) -> 'TypeIs[__DecreaseLives]':
-        return isinstance(actor, cls.__DecreaseLives)
+    def isDecreaseLives(cls, action) -> 'TypeIs[__DecreaseLives]':
+        return isinstance(action, cls.__DecreaseLives)
 
     @classmethod
-    def isActionSet(cls, actor) -> 'TypeIs[__ActionSet]':
-        return isinstance(actor, cls.__ActionSet)
+    def isActionSet(cls, action) -> 'TypeIs[__ActionSet]':
+        return isinstance(action, cls.__ActionSet)
 
     @classmethod
-    def isAddActor(cls, actor) -> 'TypeIs[__AddActor]':
-        return isinstance(actor, cls.__AddActor)
+    def isAddActor(cls, action) -> 'TypeIs[__AddActor]':
+        return isinstance(action, cls.__AddActor)
 
     @classmethod
-    def isIncrScore(cls, actor) -> 'TypeIs[__IncrScore]':
-        return isinstance(actor, cls.__IncrScore)
+    def isForEach(cls, action) -> 'TypeIs[__ForEach]':
+        return isinstance(action, cls.__ForEach)
 
     @classmethod
-    def isPlayerHit(cls, actor) -> 'TypeIs[__PlayerHit]':
-        return isinstance(actor, cls.__PlayerHit)
+    def isIncrScore(cls, action) -> 'TypeIs[__IncrScore]':
+        return isinstance(action, cls.__IncrScore)
 
     @classmethod
-    def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
-        return isinstance(actor, cls.__RemoveActor)
+    def isPlayerHit(cls, action) -> 'TypeIs[__PlayerHit]':
+        return isinstance(action, cls.__PlayerHit)
 
     @classmethod
-    def isRemoveIf(cls, actor) -> 'TypeIs[__RemoveIf]':
-        return isinstance(actor, cls.__RemoveIf)
+    def isRemoveActor(cls, action) -> 'TypeIs[__RemoveActor]':
+        return isinstance(action, cls.__RemoveActor)
+
+    @classmethod
+    def isRemoveIf(cls, action) -> 'TypeIs[__RemoveIf]':
+        return isinstance(action, cls.__RemoveIf)
 
     def __len__(self) -> int:
         return 1
@@ -106,6 +115,14 @@ class __AddActor(Action):
 class __DecreaseLives(Action):
 
     ...
+
+
+@register_subclass
+class __ForEach(Action):
+
+    # TODO: make it async
+    def __init__(self, cb: Callable[['Actor'], Action | None]) -> None:
+        self.cb = cb
 
 
 @register_subclass

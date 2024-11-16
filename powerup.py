@@ -32,12 +32,12 @@ class PowerUp(Collider):
             self.load_assets()
 
         power = 0
-        if random() < 0.75:
+        if random() < 3.0/4.0:
             power = 1
-            if random() < 0.25:
+            if random() < 1.0/3.0:
                 power = 2
-                if random() < 0.25:
-                    power = 3
+                if random() < 2.0/5.0:
+                    power = 4 if random() < 0.5 else 3
 
         self.facet = self.facets[power]
         self.power = power
@@ -79,4 +79,5 @@ colors = [
     ('orange', 'black'),
     ('red', 'black'),
     ('#ff4466', 'black'),
+    ('#00aaff', 'black'),
 ]

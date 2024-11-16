@@ -56,7 +56,10 @@ class Meteor(Collider):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, (Foe, Fire)):
-            actions: list[Action] = [Action.remove(other)]
+            actions: list[Action] = []
+
+            if not (isinstance(other, Fire) and other.power == 4):
+                actions.append(Action.remove(other))
 
             if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, Foe):
                 self.channel.play(AudioBag.explosions[0])
