@@ -1,4 +1,6 @@
-from action import Action, Actor, Collider
+from action import Action, Actor
+from foe import Foe
+from meteor import Meteor
 from player import Player
 
 
@@ -15,4 +17,4 @@ class Reload(Actor):
                 Action.decr_lives(),
                 Action.register(Player()),
             )
-        return Action.remove_if(lambda actor: isinstance(actor, Collider))
+        return Action.remove_if(lambda actor: isinstance(actor, (Foe, Meteor)))

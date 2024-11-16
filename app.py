@@ -129,7 +129,8 @@ class App:
             return
 
         if Action.isIncrScore(action):
-            self.score += action.value
+            if not self.game_over:
+                self.score += action.value
             return
 
         if Action.isRemoveActor(action):

@@ -2,18 +2,21 @@ import math
 import pygame
 from pygame import Surface
 from pygame.event import Event
+from pygame.mixer import Channel
 from action import Action, Collider
 from consts import RESOLUTION
 from explosion import Explosion
 from fire import Fire
 from foe import Foe
 from meteor import Meteor
+from sounds import AudioBag
 from util import async_gen
 
 
 class Player(Collider):
 
     facet: Surface
+    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
@@ -21,6 +24,7 @@ class Player(Collider):
             pygame.image.load('assets/player.png').convert_alpha(),
             (64, 64),
         )
+        cls.channel = Channel(1)
 
     def __init__(self) -> None:
         if not hasattr(Player, 'facet'):
@@ -84,6 +88,7 @@ class Player(Collider):
             if self.power == 4:
                 self.shots -= 1
                 if self.shots <= 0:
+                    self.channel.play(AudioBag.power_down)
                     self._power = self.previous_power
                     self.no_fire = 0.5
             return Action.register(fire)

@@ -59,7 +59,7 @@ class Fire(Collider):
             case 4:
                 if sound:
                     self.channel.play(AudioBag.explosions[1])
-                self.delay = 4.0
+                self.delay = 3.0
 
             case _:
                 if sound:

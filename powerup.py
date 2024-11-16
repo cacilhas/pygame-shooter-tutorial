@@ -1,5 +1,5 @@
 from math import isinf
-from random import random
+from random import randint, random
 
 from pygame import Surface
 import pygame
@@ -31,13 +31,20 @@ class PowerUp(Collider):
         if not self.facets:
             self.load_assets()
 
-        power = 0
-        if random() < 3.0/4.0:
-            power = 1
-            if random() < 1.0/3.0:
+        power: int = 0
+        match randint(0, 11):
+            case 0:
+                power = 0
+            case 1 | 2 | 3 | 4:
+                power = 1
+            case 5 | 6 | 7:
                 power = 2
-                if random() < 2.0/5.0:
-                    power = 4 if random() < 0.5 else 3
+            case 8 | 9:
+                power = 3
+            case 10:
+                power = 4
+            case 11:
+                power = 5
 
         self.facet = self.facets[power]
         self.power = power
@@ -50,6 +57,10 @@ class PowerUp(Collider):
     def xy(self) -> tuple[float, float]:
         return (self.x, self.y)
 
+    @property
+    def radius(self) -> float:
+        return 24
+
     async def update(self, delta: float) -> Action | None:
         self.x -= self.speed * delta
         if self.x < -self.facet.get_width():
@@ -60,18 +71,30 @@ class PowerUp(Collider):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Player):
-            if other.power < self.power:
+            if other.power < self.power and self.power != 5:
                 self.channel.play(AudioBag.power_up)
             elif other.power > self.power:
                 self.channel.play(AudioBag.power_down)
             else:
                 self.channel.play(AudioBag.catch)
 
-            other.power = self.power
-            return Action.set(
+            score_up = 100 if self.power == 0 else 20 + self.power * 10
+            actions = [
                 Action.remove(self),
-                Action.incr_score(20 + self.power * 10),
-            )
+                Action.incr_score(score_up),
+            ]
+
+            if self.power == 5:
+                from fire import Fire
+                from foe import Foe
+                from meteor import Meteor
+                actions.extend([
+                    Action.remove_if(lambda actor: isinstance(actor, (Foe, Meteor))),
+                    Action.register(Fire(self.pos, 0, power=4))
+                ])
+            else:
+                other.power = self.power
+            return Action.set(*actions)
 
 
 colors = [
@@ -80,4 +103,5 @@ colors = [
     ('red', 'black'),
     ('#ff4466', 'black'),
     ('#00aaff', 'black'),
+    ('#ff44ff', 'black'),
 ]
