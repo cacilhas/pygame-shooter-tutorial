@@ -4,6 +4,7 @@ import sys
 from typing import Coroutine, DefaultDict, Iterable, NoReturn
 import pygame
 from pygame import Surface
+from pygame.mixer import Sound
 from pygame.time import Clock
 
 from action import Action, Actor, Collider
@@ -37,6 +38,7 @@ class App:
         )
         self.paused_display = Paused()
         self.actions: list[Action | None] = []
+        self.sounds: list[Sound] = []
         pygame.mixer_music.load('assets/song.wav')
 
     def populate(self) -> None:
@@ -97,6 +99,10 @@ class App:
                     if action
                 ))
 
+            for audio in self.sounds:
+                audio.play()
+            self.sounds = []
+
     async def process(self, action: Action) -> None:
         """
         Process all collected actions
@@ -118,6 +124,9 @@ class App:
                 res = action.cb(actor)
                 if res:
                     self.actions.append(res)
+
+        if Action.isPlayAudio(action):
+            self.sounds.append(action.audio)
 
         if Action.isPlayerHit(action):
             if self.lives <= 1:

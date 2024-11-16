@@ -4,8 +4,7 @@ from random import randint, random
 from pygame import Surface
 import pygame
 from pygame.font import Font
-from pygame.mixer import Channel
-from action import Action, Collider
+from action import Action, Actor, Collider
 from consts import RESOLUTION
 from player import Player
 from sounds import AudioBag
@@ -14,12 +13,10 @@ from sounds import AudioBag
 class PowerUp(Collider):
 
     facets: list[Surface] = []
-    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
         font = Font('assets/digital-7.ttf', 48)
-        cls.channel = Channel(3)
         for i, color in enumerate(colors):
             facet = Surface((48, 48), pygame.SRCALPHA)
             pygame.draw.circle(facet, color[0], (24, 24), 24)
@@ -71,30 +68,40 @@ class PowerUp(Collider):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Player):
+            actions: list[Action] = []
+
             if other.power < self.power and self.power != 5:
-                self.channel.play(AudioBag.power_up)
+                actions.append(Action.play_audio(AudioBag.power_up))
             elif other.power > self.power:
-                self.channel.play(AudioBag.power_down)
+                actions.append(Action.play_audio(AudioBag.power_down))
             else:
-                self.channel.play(AudioBag.catch)
+                actions.append(Action.play_audio(AudioBag.catch))
 
             score_up = 100 if self.power == 0 else 20 + self.power * 10
-            actions = [
+            actions.extend([
                 Action.remove(self),
                 Action.incr_score(score_up),
-            ]
+            ])
 
             if self.power == 5:
                 from fire import Fire
                 from foe import Foe
                 from meteor import Meteor
-                actions.extend([
-                    Action.remove_if(lambda actor: isinstance(actor, (Foe, Meteor))),
-                    Action.register(Fire(self.pos, 0, power=4))
-                ])
+                def scoreit(actor: Actor) -> Action | None:
+                    if isinstance(actor, (Foe, Meteor)):
+                        return Action.set(
+                            Action.incr_score(10),
+                            Action.remove(actor),
+                        )
+                return Action.set(
+                    Action.play_audio(AudioBag.explosions[1]),
+                    Action.for_each(scoreit),
+                    Action.register(Fire(self.pos, 0, power=5)),
+                )
+
             else:
                 other.power = self.power
-            return Action.set(*actions)
+                return Action.set(*actions)
 
 
 colors = [

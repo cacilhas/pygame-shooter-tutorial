@@ -2,7 +2,6 @@ import math
 import pygame
 from pygame import Surface
 from pygame.event import Event
-from pygame.mixer import Channel
 from action import Action, Collider
 from consts import RESOLUTION
 from explosion import Explosion
@@ -16,7 +15,6 @@ from util import async_gen
 class Player(Collider):
 
     facet: Surface
-    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
@@ -24,7 +22,6 @@ class Player(Collider):
             pygame.image.load('assets/player.png').convert_alpha(),
             (64, 64),
         )
-        cls.channel = Channel(1)
 
     def __init__(self) -> None:
         if not hasattr(Player, 'facet'):
@@ -85,13 +82,15 @@ class Player(Collider):
         if self.keys[4] and self.no_fire == 0:
             fire = Fire(self.xy, self.angle, power=self.power)
             self.no_fire = fire.delay
+            play_audio: Action | None = None
             if self.power == 4:
                 self.shots -= 1
                 if self.shots <= 0:
-                    self.channel.play(AudioBag.power_down)
+                    play_audio = Action.play_audio(AudioBag.power_down)
                     self._power = self.previous_power
                     self.no_fire = 0.5
-            return Action.register(fire)
+            register_fire = Action.register(fire)
+            return Action.set(play_audio, register_fire) if play_audio else register_fire
 
     async def react(self, events: list[Event]) -> None:
         async for event in async_gen(ev for ev in events if ev.type == pygame.KEYUP):

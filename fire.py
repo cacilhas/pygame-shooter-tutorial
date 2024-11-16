@@ -3,7 +3,6 @@ import math
 from random import random
 from pygame import Surface
 import pygame
-from pygame.mixer import Channel
 from action import Action, Actor, Collider
 from consts import RESOLUTION
 from sounds import AudioBag
@@ -12,11 +11,9 @@ from sounds import AudioBag
 class Fire(Collider):
 
     facets: list[Surface] = []
-    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
-        cls.channel = Channel(1)
         bullet = pygame.transform.scale(
             pygame.image.load('assets/bullet.png').convert_alpha(),
             (12, 12),
@@ -31,12 +28,14 @@ class Fire(Collider):
             laser,
             laser,
             nuke,
+            nuke,
         ])
 
-    def __init__(self, pos: tuple[float, float], angle: float, *, power: int, sound: bool=True) -> None:
+    def __init__(self, pos: tuple[float, float], angle: float, *, power: int, quiet: bool=False) -> None:
         self.x, self.y = pos
         self.angle = angle
-        self.speed = 1200.0
+        self.speed: float = 1200.0
+        self.started: bool = quiet
 
         if not self.facets:
             self.load_assets()
@@ -46,24 +45,16 @@ class Fire(Collider):
 
         match power:
             case 1:
-                if sound:
-                    self.channel.play(AudioBag.bullet)
                 self.delay = 0.1875
 
             case 2 | 3:
-                if sound and random() < 0.25:
-                    self.channel.play(AudioBag.laser)
                 self.delay = 0.0
                 self._radius = 12.0
 
             case 4:
-                if sound:
-                    self.channel.play(AudioBag.explosions[1])
                 self.delay = 3.0
 
             case _:
-                if sound:
-                    self.channel.play(AudioBag.bullet)
                 self.delay = 0.125
 
     @property
@@ -77,7 +68,7 @@ class Fire(Collider):
     async def draw(self, surface: Surface) -> None:
         if self.power in [2, 3]:
             facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
-        elif self.power == 4:
+        elif self.power in [4, 5]:
             facet = pygame.transform.scale(self.facet, (self.radius, self.radius))
         else:
             facet = self.facet
@@ -88,14 +79,28 @@ class Fire(Collider):
             # Triple shoot
             self.power -= 1
             return Action.set(
-                Action.register(Fire(self.xy, self.angle - math.pi/12, power=self.power, sound=False)),
-                Action.register(Fire(self.xy, self.angle + math.pi/12, power=self.power, sound=False)),
+                Action.register(Fire(self.xy, self.angle - math.pi/12, power=self.power, quiet=True)),
+                Action.register(Fire(self.xy, self.angle + math.pi/12, power=self.power, quiet=True)),
             )
 
-        if self.power == 4:
-            self._radius += 2000 * delta
+        if not self.started:
+            self.started = True
+            match self.power:
+                case 2 | 3:
+                    return Action.play_audio(AudioBag.laser) if random() < 0.5 else None
+
+                case 4:
+                    return Action.play_audio(AudioBag.explosions[1])
+
+                case _:
+                    return Action.play_audio(AudioBag.bullet)
+
+        if self.power in [4, 5]:
+            self._radius += self.speed * delta
+
             if self.radius > 1280:
                 return Action.remove(self)
+
             else:
                 from foe import Foe
                 def scoreit(actor: Actor) -> Action | None:
@@ -109,9 +114,10 @@ class Fire(Collider):
 
         width, height = self.facet.get_size()
         speed = self.speed * delta
-        dx, dy = math.cos(self.angle) * speed, math.sin(self.angle) * speed
-        self.x += dx
-        self.y += dy
+        if self.power not in [4, 5]:
+            dx, dy = math.cos(self.angle) * speed, math.sin(self.angle) * speed
+            self.x += dx
+            self.y += dy
 
         if self.x > RESOLUTION[0] + width / 2:
             return Action.remove(self)

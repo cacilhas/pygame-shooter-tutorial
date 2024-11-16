@@ -1,7 +1,6 @@
 from pygame import Surface
 import pygame
 from pygame.math import clamp
-from pygame.mixer import Channel
 from action import Action, Collider
 from consts import FPS, RESOLUTION
 from explosion import Explosion
@@ -13,16 +12,12 @@ from sounds import AudioBag
 class Foe(Collider):
 
     facet: Surface
-    channel: Channel
     x: float
     y: float
     dy: float
     speed: float
 
     def __new__(cls, y: float, speed: float) -> 'Foe':
-        if not hasattr(Foe, 'channel'):
-            cls.channel = Channel(2)
-
         return RocketFoe(y, speed)
 
     @property
@@ -82,8 +77,10 @@ class RocketFoe(Foe):
                     Action.incr_score(10),
                 )
             else:
-                self.channel.play(AudioBag.explosions[0])
-                return Action.remove(other)
+                return Action.set(
+                    Action.remove(other),
+                    Action.play_audio(AudioBag.explosions[0])
+                )
 
         if isinstance(other, Foe):
             if self.y < other.y:

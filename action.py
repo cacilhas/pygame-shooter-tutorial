@@ -3,6 +3,7 @@ from types import ModuleType
 from typing import Any, Callable, Iterable, Type, TypeIs
 from pygame import Surface
 from pygame.event import Event
+from pygame.mixer import Sound
 
 
 #---------#---------------------------------------------------------------------
@@ -16,6 +17,7 @@ class Action:
     __DecreaseLives: 'type[__DecreaseLives]'
     __ForEach: 'type[__ForEach]'
     __IncrScore: 'type[__IncrScore]'
+    __PlayAudio: 'type[__PlayAudio]'
     __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
     __RemoveIf: 'type[__RemoveIf]'
@@ -33,6 +35,10 @@ class Action:
     @classmethod
     def incr_score(cls, value: int) -> 'Action':
         return cls.__IncrScore(value)
+
+    @classmethod
+    def play_audio(cls, audio: Sound) -> 'Action':
+        return cls.__PlayAudio(audio)
 
     @classmethod
     def player_hit(cls) -> 'Action':
@@ -57,35 +63,39 @@ class Action:
     #-----#
 
     @classmethod
-    def isDecreaseLives(cls, action) -> 'TypeIs[__DecreaseLives]':
+    def isDecreaseLives(cls, action) -> TypeIs['__DecreaseLives']:
         return isinstance(action, cls.__DecreaseLives)
 
     @classmethod
-    def isActionSet(cls, action) -> 'TypeIs[__ActionSet]':
+    def isActionSet(cls, action) -> TypeIs['__ActionSet']:
         return isinstance(action, cls.__ActionSet)
 
     @classmethod
-    def isAddActor(cls, action) -> 'TypeIs[__AddActor]':
+    def isAddActor(cls, action) -> TypeIs['__AddActor']:
         return isinstance(action, cls.__AddActor)
 
     @classmethod
-    def isForEach(cls, action) -> 'TypeIs[__ForEach]':
+    def isForEach(cls, action) -> TypeIs['__ForEach']:
         return isinstance(action, cls.__ForEach)
 
     @classmethod
-    def isIncrScore(cls, action) -> 'TypeIs[__IncrScore]':
+    def isIncrScore(cls, action) -> TypeIs['__IncrScore']:
         return isinstance(action, cls.__IncrScore)
 
     @classmethod
-    def isPlayerHit(cls, action) -> 'TypeIs[__PlayerHit]':
+    def isPlayAudio(cls, action) -> TypeIs['__PlayAudio']:
+        return isinstance(action, cls.__PlayAudio)
+
+    @classmethod
+    def isPlayerHit(cls, action) -> TypeIs['__PlayerHit']:
         return isinstance(action, cls.__PlayerHit)
 
     @classmethod
-    def isRemoveActor(cls, action) -> 'TypeIs[__RemoveActor]':
+    def isRemoveActor(cls, action) -> TypeIs['__RemoveActor']:
         return isinstance(action, cls.__RemoveActor)
 
     @classmethod
-    def isRemoveIf(cls, action) -> 'TypeIs[__RemoveIf]':
+    def isRemoveIf(cls, action) -> TypeIs['__RemoveIf']:
         return isinstance(action, cls.__RemoveIf)
 
     def __len__(self) -> int:
@@ -130,6 +140,13 @@ class __IncrScore(Action):
 
     def __init__(self, value: int) -> None:
         self.value = value
+
+
+@register_subclass
+class __PlayAudio(Action):
+
+    def __init__(self, audio: Sound) -> None:
+        self.audio = audio
 
 
 @register_subclass

@@ -1,7 +1,6 @@
 
 from pygame import Surface
 import pygame
-from pygame.mixer import Channel
 from action import Action, Actor
 from sounds import AudioBag
 
@@ -9,7 +8,6 @@ from sounds import AudioBag
 class Explosion(Actor):
 
     facets: list[Surface] = []
-    channel: Channel
     z: int = 12
 
     @classmethod
@@ -18,7 +16,6 @@ class Explosion(Actor):
             pygame.image.load(f'assets/explosion/flash{i:02d}.png').convert_alpha()
             for i in range(9)
         ]
-        cls.channel = Channel(2)
 
     @property
     def pos(self) -> tuple[int, int]:
@@ -35,9 +32,13 @@ class Explosion(Actor):
 
         self.__pos = pos
         self.frame: float = 0
-        self.channel.play(AudioBag.explosions[1])
+        self.started: bool = False
 
     async def update(self, delta: float) -> Action | None:
+        if not self.started:
+            self.started = True
+            return Action.play_audio(AudioBag.explosions[1])
+
         self.frame += delta * 40
         if self.frame >= 9:
             return Action.remove(self)

@@ -2,7 +2,6 @@ import math
 from random import choice
 from pygame import Surface
 import pygame
-from pygame.mixer import Channel
 from action import Action, Collider
 from consts import RESOLUTION
 from explosion import Explosion
@@ -14,7 +13,6 @@ from sounds import AudioBag
 class Meteor(Collider):
 
     facets: list[Surface] = []
-    channel: Channel
 
     @classmethod
     def load_assets(cls) -> None:
@@ -22,7 +20,6 @@ class Meteor(Collider):
             pygame.image.load(f'assets/meteors/meteor{i}.png').convert_alpha()
             for i in range(1, 5)
         ]
-        cls.channel = Channel(2)
 
     def __init__(self, y: float, speed: float, size: int, rotation: float) -> None:
         if not self.facets:
@@ -62,7 +59,9 @@ class Meteor(Collider):
                 actions.append(Action.remove(other))
 
             if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, Foe):
-                self.channel.play(AudioBag.explosions[0])
-                actions.append(Action.register(Explosion(pos=other.pos, size=72)))
+                actions.extend([
+                    Action.register(Explosion(pos=other.pos, size=72)),
+                    Action.play_audio(AudioBag.explosions[0])
+                ])
 
             return Action.set(*actions)
