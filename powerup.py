@@ -75,5 +75,5 @@ colors = [
     ('#222222', 'white'),
     ('orange', 'black'),
     ('red', 'black'),
-    ('#ff4444', 'black'),
+    ('#ff4466', 'black'),
 ]

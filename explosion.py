@@ -8,6 +8,7 @@ from sounds import AudioBag
 class Explosion(Actor):
 
     facets: list[Surface] = []
+    z: int = 10
 
     @classmethod
     def load_assets(cls) -> None:

@@ -13,7 +13,7 @@ from fps import FpsDisplay
 from player import Player
 from score import Score
 from sounds import AudioBag
-from spawner import FoeSpawner, PowerUpSpawner
+from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
 from stars import StarsBackground
 
 
@@ -45,6 +45,7 @@ class App:
             StarsBackground(),
             FoeSpawner(),
             PowerUpSpawner(),
+            MeteorSpawner(),
             FpsDisplay(),
             Score(self),
             Player(),

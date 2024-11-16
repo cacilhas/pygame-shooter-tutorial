@@ -61,8 +61,8 @@ class Fire(Collider):
     @property
     def radius(self) -> float:
         match self.power:
-            case 2:
-                return 20
+            case 2 | 3:
+                return 12
             case _:
                 return 6
 
