@@ -1,9 +1,9 @@
 from pygame import Surface
 import pygame
 from action import Action, Collider
-from bullet import Bullet
 from consts import FPS, RESOLUTION
 from explosion import Explosion
+from fire import Fire
 from sounds import AudioBag
 
 
@@ -44,7 +44,7 @@ class Foe(Collider):
             return Action.remove(self)
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, Bullet):
+        if isinstance(other, Fire):
             self.hp -= 1
             if self.hp <= 0:
                 return Action.set(

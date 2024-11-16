@@ -9,7 +9,7 @@ from consts import RESOLUTION
 from sounds import AudioBag
 
 
-class Bullet(Collider):
+class Fire(Collider):
 
     facets: list[Surface] = []
 
@@ -67,8 +67,8 @@ class Bullet(Collider):
             # Triple bullet
             self.power = 0
             return Action.set(
-                Action.register(Bullet(self.xy, self.angle - math.pi/12, power=0, sound=False)),
-                Action.register(Bullet(self.xy, self.angle + math.pi/12, power=0, sound=False)),
+                Action.register(Fire(self.xy, self.angle - math.pi/12, power=0, sound=False)),
+                Action.register(Fire(self.xy, self.angle + math.pi/12, power=0, sound=False)),
             )
 
         width, height = self.facet.get_size()

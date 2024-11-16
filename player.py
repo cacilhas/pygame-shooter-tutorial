@@ -3,9 +3,9 @@ import pygame
 from pygame import Surface
 from pygame.event import Event
 from action import Action, Collider
-from bullet import Bullet
 from consts import RESOLUTION
 from explosion import Explosion
+from fire import Fire
 from foe import Foe
 from sounds import AudioBag
 from util import async_gen
@@ -64,7 +64,7 @@ class Player(Collider):
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
 
         if self.keys[4] and self.no_fire == 0:
-            fire = Bullet(self.xy, self.angle, power=self.power)
+            fire = Fire(self.xy, self.angle, power=self.power)
             self.no_fire = fire.delay
             return Action.register(fire)
 
