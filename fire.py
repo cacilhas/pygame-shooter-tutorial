@@ -21,7 +21,12 @@ class Fire(Collider):
         )
         laser = Surface((24, 24), pygame.SRCALPHA)
         pygame.draw.line(laser, 'red', (0,12), (24,12), 2)
-        cls.facets.extend([bullet, bullet, laser])
+        cls.facets.extend([
+            bullet,
+            bullet,
+            laser,
+            laser,
+        ])
 
     def __init__(self, pos: tuple[float, float], angle: float, *, power: int, sound: bool=True) -> None:
         self.x, self.y = pos
@@ -35,16 +40,18 @@ class Fire(Collider):
 
         match power:
             case 1:
-                AudioBag.bullet.play()
+                if sound:
+                    AudioBag.bullet.play()
                 self.delay = 0.1875
 
-            case 2:
-                if random() < 0.25:
+            case 2 | 3:
+                if sound and random() < 0.25:
                     AudioBag.laser.play()
                 self.delay = 0.0
 
             case _:
-                AudioBag.bullet.play()
+                if sound:
+                    AudioBag.bullet.play()
                 self.delay = 0.125
 
     @property
@@ -60,19 +67,19 @@ class Fire(Collider):
                 return 6
 
     async def draw(self, surface: Surface) -> None:
-        if self.power == 2:
+        if self.power in [2, 3]:
             facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
         else:
             facet = self.facet
         self.blit(dest=surface, src=facet)
 
     async def update(self, delta: float) -> Action | None:
-        if self.power == 1:
-            # Triple bullet
-            self.power = 0
+        if self.power in [1, 3]:
+            # Triple shoot
+            self.power -= 1
             return Action.set(
-                Action.register(Fire(self.xy, self.angle - math.pi/12, power=0, sound=False)),
-                Action.register(Fire(self.xy, self.angle + math.pi/12, power=0, sound=False)),
+                Action.register(Fire(self.xy, self.angle - math.pi/12, power=self.power, sound=False)),
+                Action.register(Fire(self.xy, self.angle + math.pi/12, power=self.power, sound=False)),
             )
 
         width, height = self.facet.get_size()

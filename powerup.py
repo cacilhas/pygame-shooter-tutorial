@@ -17,10 +17,10 @@ class PowerUp(Collider):
     @classmethod
     def load_assets(cls) -> None:
         font = Font('assets/digital-7.ttf', 48)
-        for i in range(3):
+        for i, color in enumerate(colors):
             facet = Surface((48, 48), pygame.SRCALPHA)
-            pygame.draw.circle(facet, colors[i][0], (24, 24), 24)
-            text = font.render(str(i), True, colors[i][1])
+            pygame.draw.circle(facet, color[0], (24, 24), 24)
+            text = font.render(str(i), True, color[1])
             facet.blit(text, (text.get_width()/2, 4))
             cls.facets.append(facet)
 
@@ -31,8 +31,10 @@ class PowerUp(Collider):
         power = 0
         if random() < 0.75:
             power = 1
-            if random() < 0.125:
+            if random() < 0.25:
                 power = 2
+                if random() < 0.25:
+                    power = 3
 
         self.facet = self.facets[power]
         self.power = power
@@ -70,7 +72,8 @@ class PowerUp(Collider):
 
 
 colors = [
-    ('black', 'white'),
+    ('#222222', 'white'),
     ('orange', 'black'),
     ('red', 'black'),
+    ('#ff4444', 'black'),
 ]
