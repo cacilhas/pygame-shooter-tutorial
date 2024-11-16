@@ -13,6 +13,7 @@ from fps import FpsDisplay
 from gameover import GameOver
 from paused import Paused
 from player import Player
+from reload import Reload
 from score import Score
 from sounds import AudioBag
 from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
@@ -104,7 +105,7 @@ class App:
                 self.actors.append(GameOver())
                 self.game_over = True
             else:
-                ...  # TODO: schedule player to restart
+                self.actors.append(Reload())
             return
 
         if Action.isIncrScore(action):
@@ -117,6 +118,13 @@ class App:
             except ValueError:
                 print(sys.stderr, f'{action.actor} was supposed to be in the actors list')
             return
+
+        if Action.isRemoveIf(action):
+            actors: list[Actor] = []
+            for actor in self.actors:
+                if not action.check(actor):
+                    actors.append(actor)
+            self.actors = actors
 
     async def draw(self) -> None:
         """
@@ -156,7 +164,7 @@ class App:
             self.clock = Clock()
             self.score: int = 0
             self.actors: list[Actor] = []
-            self.lives: int = 1  # TODO: 3
+            self.lives: int = 3
             self.reset: bool = False
             self.game_over: bool = False
             self.paused: bool = False

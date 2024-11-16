@@ -16,6 +16,7 @@ class Action:
     __IncrScore: 'type[__IncrScore]'
     __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
+    __RemoveIf: 'type[__RemoveIf]'
 
     #-----#
 
@@ -34,6 +35,10 @@ class Action:
     @classmethod
     def remove(cls, actor: 'Actor') -> 'Action':
         return cls.__RemoveActor(actor)
+
+    @classmethod
+    def remove_if(cls, cb: Callable[['Actor'], bool]) -> 'Action':
+        return cls.__RemoveIf(cb)
 
     @classmethod
     def set(cls, *actions: 'Action') -> 'Action':
@@ -60,6 +65,10 @@ class Action:
     @classmethod
     def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
         return isinstance(actor, cls.__RemoveActor)
+
+    @classmethod
+    def isRemoveIf(cls, actor) -> 'TypeIs[__RemoveIf]':
+        return isinstance(actor, cls.__RemoveIf)
 
     def __len__(self) -> int:
         return 1
@@ -96,11 +105,18 @@ class __PlayerHit(Action):
 
     ...
 
+
 @register_subclass
 class __RemoveActor(Action):
 
     def __init__(self, actor: 'Actor') -> None:
         self.actor = actor
+
+
+@register_subclass
+class __RemoveIf(Action):
+    def __init__(self, cb: Callable[['Actor'], bool]) -> None:
+        self.check = cb
 
 
 #--------#----------------------------------------------------------------------
