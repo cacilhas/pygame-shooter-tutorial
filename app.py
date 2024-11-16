@@ -37,7 +37,7 @@ class App:
         )
         self.paused_display = Paused()
         self.actions: list[Action | None] = []
-        pygame.mixer_music.load('assets/song.mp3')
+        pygame.mixer_music.load('assets/song.wav')
 
     def populate(self) -> None:
         """
