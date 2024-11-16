@@ -114,9 +114,11 @@ class Player(Collider):
                 Action.remove(self),
                 Action.remove(other),
                 Action.register(Explosion(pos=self.pos, size=120)),
+                Action.player_hit(),
             )
         if isinstance(other, Meteor):
             return Action.set(
                 Action.remove(self),
                 Action.register(Explosion(pos=self.pos, size=120)),
+                Action.player_hit(),
             )

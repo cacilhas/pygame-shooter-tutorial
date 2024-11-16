@@ -1,6 +1,6 @@
 import math
 from types import ModuleType
-from typing import Any, Callable, Iterable, TypeIs
+from typing import Any, Callable, Iterable, Type, TypeIs
 from pygame import Surface
 from pygame.event import Event
 
@@ -14,7 +14,18 @@ class Action:
     __ActionSet: 'type[__ActionSet]'
     __AddActor: 'type[__AddActor]'
     __IncrScore: 'type[__IncrScore]'
+    __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
+
+    #-----#
+
+    @classmethod
+    def incr_score(cls, value: int) -> 'Action':
+        return cls.__IncrScore(value)
+
+    @classmethod
+    def player_hit(cls) -> 'Action':
+        return cls.__PlayerHit()
 
     @classmethod
     def register(cls, actor: 'Actor') -> 'Action':
@@ -28,9 +39,7 @@ class Action:
     def set(cls, *actions: 'Action') -> 'Action':
         return cls.__ActionSet(actions)
 
-    @classmethod
-    def incr_score(cls, value: int) -> 'Action':
-        return cls.__IncrScore(value)
+    #-----#
 
     @classmethod
     def isActionSet(cls, actor) -> 'TypeIs[__ActionSet]':
@@ -43,6 +52,10 @@ class Action:
     @classmethod
     def isIncrScore(cls, actor) -> 'TypeIs[__IncrScore]':
         return isinstance(actor, cls.__IncrScore)
+
+    @classmethod
+    def isPlayerHit(cls, actor) -> 'TypeIs[__PlayerHit]':
+        return isinstance(actor, cls.__PlayerHit)
 
     @classmethod
     def isRemoveActor(cls, actor) -> 'TypeIs[__RemoveActor]':
@@ -58,10 +71,10 @@ def register_subclass[T](cls: type[T]) -> type[T]:
 
 
 @register_subclass
-class __RemoveActor(Action):
+class __ActionSet(Action):
 
-    def __init__(self, actor: 'Actor') -> None:
-        self.actor = actor
+    def __init__(self, actions: Iterable[Action]) -> None:
+        self.actions = actions
 
 
 @register_subclass
@@ -79,10 +92,15 @@ class __IncrScore(Action):
 
 
 @register_subclass
-class __ActionSet(Action):
+class __PlayerHit(Action):
 
-    def __init__(self, actions: Iterable[Action]) -> None:
-        self.actions = actions
+    ...
+
+@register_subclass
+class __RemoveActor(Action):
+
+    def __init__(self, actor: 'Actor') -> None:
+        self.actor = actor
 
 
 #--------#----------------------------------------------------------------------

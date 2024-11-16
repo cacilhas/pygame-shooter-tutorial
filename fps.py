@@ -7,11 +7,12 @@ from action import Action, Actor
 
 class FpsDisplay(Actor):
 
+    z: int = 20
+
     def __init__(self) -> None:
         self.font = Font('assets/digital-7.ttf', 24)
         self.text = 'FPS: 0.0'
         self.present = False
-        self.z = 20
 
     async def update(self, delta: float) -> Action | None:
         fps = 1 / delta

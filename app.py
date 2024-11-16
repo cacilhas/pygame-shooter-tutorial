@@ -10,6 +10,7 @@ from pygame.time import Clock
 from action import Action, Actor, Collider
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
+from gameover import GameOver
 from player import Player
 from score import Score
 from sounds import AudioBag
@@ -32,10 +33,6 @@ class App:
             | pygame.SCALED,
             vsync=1,
         )
-        self.clock = Clock()
-        self.score: int = 0
-        self.actors: list[Actor] = []
-        self.populate()
 
     def populate(self) -> None:
         """
@@ -96,15 +93,27 @@ class App:
 
         if Action.isAddActor(action):
             self.actors.insert(0, action.actor)
+            return
+
+        if Action.isPlayerHit(action):
+            self.lives -= 1
+            if self.lives <= 0:
+                self.actors.append(GameOver())
+                self.game_over = True
+            else:
+                ...  # TODO: schedule player to restart
+            return
 
         if Action.isIncrScore(action):
             self.score += action.value
+            return
 
         if Action.isRemoveActor(action):
             try:
                 self.actors.remove(action.actor)
             except ValueError:
                 print(sys.stderr, f'{action.actor} was supposed to be in the actors list')
+            return
 
     async def draw(self) -> None:
         """
@@ -129,10 +138,21 @@ class App:
                 import sys
                 pygame.quit()
                 sys.exit()
+            if self.game_over and event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
+                self.reset = True
         await asyncio.gather(*(actor.react(events) for actor in self.actors))
 
     async def start(self) -> NoReturn:
         while True:
-            await self.events()
-            await self.update()
-            await self.draw()
+            self.clock = Clock()
+            self.score: int = 0
+            self.actors: list[Actor] = []
+            self.lives: int = 1  # TODO: 3
+            self.reset: bool = False
+            self.game_over: bool = False
+            self.populate()
+
+            while not self.reset:
+                await self.events()
+                await self.update()
+                await self.draw()

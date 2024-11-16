@@ -11,11 +11,12 @@ class App(Protocol):
 
 class Score(Actor):
 
+    z: int = 20
+
     def __init__(self, app: App) -> None:
         self.app = app
         self.font = Font('assets/digital-7.ttf', 24)
         self.text = 'Score: 0'
-        self.z = 20
 
     async def update(self, delta: float) -> Action | None:
         self.text = f'Score: {self.app.score:5d}'
