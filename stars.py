@@ -1,5 +1,5 @@
 from random import choice, randint
-from pygame import Surface
+from pygame import Color, Surface
 import pygame
 from action import Action, Actor
 from consts import RESOLUTION
@@ -23,19 +23,17 @@ class StarsBackground(Actor):
             Surface(RESOLUTION, pygame.SRCALPHA),
             Surface(RESOLUTION, pygame.SRCALPHA),
         ]
+
         self.speeds: list[float] = [20.0, 40.0, 60.0]
         self.xs: list[float] = [10.0, 0.0, 0.0]
+        rect = (0, 0, *RESOLUTION)
 
         for i, facet in enumerate(facets):
+            pygame.draw.rect(facet, '#00000080', rect)
             for x in range(0, width, 1 << i):
                 y = randint(0, RESOLUTION[1])
                 color = choice(self.colors)
-                pygame.draw.circle(
-                    facet,
-                    color,
-                    (x, y),
-                    i + 1,
-                )
+                pygame.draw.circle(facet, color, (x, y), i + 1)
 
     async def update(self, delta: float) -> Action | None:
         for i, speed in enumerate(self.speeds):
