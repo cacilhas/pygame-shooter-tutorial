@@ -4,6 +4,7 @@ from random import randint, random
 from pygame import Surface
 import pygame
 from pygame.font import Font
+from pygame.mixer import Sound
 from action import Action, Actor, Collider
 from consts import RESOLUTION
 from player import Player
@@ -68,20 +69,25 @@ class PowerUp(Collider):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Player):
-            actions: list[Action] = []
+            player: Player = other
+            audio: Sound
 
-            if other.power < self.power and self.power != 5:
-                actions.append(Action.play_audio(AudioBag.power_up))
-            elif other.power > self.power:
-                actions.append(Action.play_audio(AudioBag.power_down))
+            if player.power < self.power and self.power != 5:
+                audio = AudioBag.power_up
+            elif player.power > self.power:
+                audio = AudioBag.power_down
+            elif self.power == 5:
+                audio = AudioBag.explosions[1]
             else:
-                actions.append(Action.play_audio(AudioBag.catch))
+                audio = AudioBag.catch
+
+            actions: list[Action] = [
+                Action.remove(self),
+                Action.play_audio(audio),
+            ]
 
             score_up = 100 if self.power == 0 else 20 + self.power * 10
-            actions.extend([
-                Action.remove(self),
-                Action.incr_score(score_up),
-            ])
+            actions.append(Action.incr_score(score_up))
 
             if self.power == 5:
                 from fire import Fire
@@ -93,15 +99,15 @@ class PowerUp(Collider):
                             Action.incr_score(10),
                             Action.remove(actor),
                         )
-                return Action.set(
-                    Action.play_audio(AudioBag.explosions[1]),
+                actions.extend([
                     Action.for_each(scoreit),
                     Action.register(Fire(self.pos, 0, power=5)),
-                )
+                ])
 
             else:
-                other.power = self.power
-                return Action.set(*actions)
+                player.power = self.power
+
+            return Action.set(*actions)
 
 
 colors = [
