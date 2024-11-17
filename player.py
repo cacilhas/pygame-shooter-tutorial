@@ -8,6 +8,7 @@ from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
 from foe import Foe
+from foe_force_field import FoeForceField
 from meteor import Meteor
 from sounds import AudioBag
 from util import async_gen
@@ -133,7 +134,7 @@ class Player(Collider):
             self.dx += 1
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (Foe, EnemyFire)):
+        if isinstance(other, (Foe, EnemyFire, FoeForceField)):
             return Action.set(
                 Action.remove(self),
                 Action.remove(other),

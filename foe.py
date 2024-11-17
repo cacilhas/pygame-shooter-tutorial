@@ -183,5 +183,9 @@ class LaserProofFoe(RocketFoe):
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Fire) and other.power in [2, 3]:
-            return Action.remove(other)
+            from foe_force_field import FoeForceField
+            return Action.set(
+                Action.remove(other),
+                Action.register(FoeForceField(self.xy, self.dx)),
+            )
         return await super().on_collision(other)

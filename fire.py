@@ -115,10 +115,9 @@ class Fire(Collider):
 
         width, height = self.facet.get_size()
         speed = self.speed * delta
-        if self.power not in [4, 5]:
-            dx, dy = math.cos(self.angle) * speed, math.sin(self.angle) * speed
-            self.x += dx
-            self.y += dy
+        dx, dy = math.cos(self.angle) * speed, math.sin(self.angle) * speed
+        self.x += dx
+        self.y += dy
 
         if self.x > RESOLUTION[0] + width / 2:
             return Action.remove(self)
