@@ -69,7 +69,7 @@ class Fire(Collider):
             facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
         elif self.power in [4, 5]:
             facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
-            color = (0x00,0xbb, 0xff, min(255, int(256 - (256.0 * self.radius / 1280.0))))
+            color = (0x00,0xff, 0xbb, min(255, int(256 - (256.0 * self.radius / 1280.0))))
             pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
         else:
             facet = self.facet
