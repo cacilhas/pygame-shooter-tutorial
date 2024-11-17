@@ -1,4 +1,3 @@
-
 import math
 from random import random
 from pygame import Surface
@@ -32,13 +31,14 @@ class Fire(Collider):
         ])
 
     def __init__(self, pos: tuple[float, float], angle: float, *, power: int, quiet: bool=False) -> None:
+        if not self.facets:
+            self.load_assets()
+
         self.x, self.y = pos
         self.angle = angle
         self.speed: float = 1200.0
         self.started: bool = quiet
 
-        if not self.facets:
-            self.load_assets()
         self.facet = self.facets[power]
         self.power = power
         self._radius: float = 6.0

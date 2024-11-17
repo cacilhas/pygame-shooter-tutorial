@@ -21,7 +21,7 @@ class Foe(Collider):
     hp: int
 
     def __new__(cls, y: float, speed: float) -> 'Foe':
-        return ShooterFoe(y, speed) if random() < 0.1 else RocketFoe(y, speed)
+        return ShooterFoe(y, speed) if random() < 0.125 else RocketFoe(y, speed)
 
     @property
     def xy(self) -> tuple[float, float]:
@@ -136,3 +136,7 @@ class ShooterFoe(Foe):
         self.dx -= self.dx * delta / 2
         self.y += math.sin(self.dy) * self.r
         self.dy += delta
+
+        if random() < 0.03125:
+            from enemy_fire import EnemyFire
+            return Action.register(EnemyFire(self))

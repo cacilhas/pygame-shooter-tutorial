@@ -4,6 +4,7 @@ from pygame import Surface
 from pygame.event import Event
 from action import Action, Collider
 from consts import RESOLUTION
+from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
 from foe import Foe
@@ -132,7 +133,7 @@ class Player(Collider):
             self.dx += 1
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, Foe):
+        if isinstance(other, (Foe, EnemyFire)):
             return Action.set(
                 Action.remove(self),
                 Action.remove(other),
