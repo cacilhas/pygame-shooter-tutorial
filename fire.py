@@ -67,10 +67,6 @@ class Fire(Collider):
     async def draw(self, surface: Surface) -> None:
         if self.power in [2, 3]:
             facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
-        elif self.power in [4, 5]:
-            facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
-            color = (0x00,0xff, 0xbb, min(255, int(256 - (256.0 * self.radius / 1280.0))))
-            pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
         else:
             facet = self.facet
         self.blit(dest=surface, src=facet)
@@ -102,16 +98,20 @@ class Fire(Collider):
             if self.radius > 1280:
                 return Action.remove(self)
 
-            else:
-                from foe import Foe
-                def scoreit(actor: Actor) -> Action | None:
-                    if isinstance(actor, Foe):
-                        return Action.set(
-                            Action.incr_score(10),
-                            Action.remove(actor),
-                        )
+            facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
+            color = (0x00,0xff, 0xbb, min(255, int(256 - (256.0 * self.radius / 1280.0))))
+            pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
+            self.facet = facet
 
-                return Action.for_each(scoreit)
+            from foe import Foe
+            def scoreit(actor: Actor) -> Action | None:
+                if isinstance(actor, Foe):
+                    return Action.set(
+                        Action.incr_score(10),
+                        Action.remove(actor),
+                    )
+
+            return Action.for_each(scoreit)
 
         width, height = self.facet.get_size()
         speed = self.speed * delta
