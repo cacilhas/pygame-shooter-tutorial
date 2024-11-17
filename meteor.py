@@ -6,7 +6,7 @@ from action import Action, Collider
 from consts import RESOLUTION
 from explosion import Explosion
 from fire import Fire
-from foe import Foe
+from foe import RocketFoe
 from sounds import AudioBag
 
 
@@ -52,13 +52,13 @@ class Meteor(Collider):
         self.blit(dest=surface, src=facet)
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (Foe, Fire)):
+        if isinstance(other, (RocketFoe, Fire)):
             actions: list[Action] = []
 
             if not (isinstance(other, Fire) and other.power == 4):
                 actions.append(Action.remove(other))
 
-            if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, Foe):
+            if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, RocketFoe):
                 actions.extend([
                     Action.register(Explosion(pos=other.pos, size=72)),
                     Action.play_audio(AudioBag.explosions[0])

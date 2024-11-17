@@ -1,3 +1,5 @@
+import math
+from random import randint, random
 from pygame import Surface
 import pygame
 from pygame.math import clamp
@@ -15,56 +17,15 @@ class Foe(Collider):
     x: float
     y: float
     dy: float
-    speed: float
+    dx: float
+    hp: int
 
     def __new__(cls, y: float, speed: float) -> 'Foe':
-        return RocketFoe(y, speed)
+        return ShooterFoe(y, speed) if random() < 0.1 else RocketFoe(y, speed)
 
     @property
     def xy(self) -> tuple[float, float]:
         return self.x, self.y
-
-
-class RocketFoe(Foe):
-
-    def __new__(cls, y: float, speed: float) -> 'Foe':
-        return Collider.__new__(cls)
-
-    @classmethod
-    def load_assets(cls) -> None:
-        cls.facet = pygame.transform.scale(
-            pygame.image.load('assets/foe-1.png').convert_alpha(),
-            (64, 40),
-        )
-
-    def __init__(self, y: float, speed: float) -> None:
-        if not hasattr(RocketFoe, 'facet'):
-            self.load_assets()
-
-        self.x = RESOLUTION[0] + self.facet.get_width() / 2
-        self.y = y
-        self.dy: float = 0.0
-        self.hp: int = 3
-        self.speed = speed
-        self.sensor: FoeSensor | None = None
-
-    @property
-    def radius(self) -> float:
-        return 32
-
-    async def draw(self, surface: Surface) -> None:
-        self.blit(dest=surface, src=self.facet)
-
-    async def update(self, delta: float) -> Action | None:
-        if self.sensor is None:
-            self.sensor = FoeSensor(self)
-            return Action.register(self.sensor)
-
-        self.x -= self.speed * delta
-        self.y += clamp(self.dy, -100, 100) * delta
-        self.dy -= self.dy * delta
-        if self.x + self.facet.get_width() / 2 < 0:
-            return Action.remove(self)
 
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Fire):
@@ -90,6 +51,88 @@ class RocketFoe(Foe):
                 self.dy = 100
                 other.dy = -100
 
+
+class RocketFoe(Foe):
+
+    def __new__(cls, y: float, speed: float) -> 'Foe':
+        return Collider.__new__(cls)
+
+    @classmethod
+    def load_assets(cls) -> None:
+        cls.facet = pygame.transform.scale(
+            pygame.image.load('assets/foe-1.png').convert_alpha(),
+            (64, 40),
+        )
+
+    def __init__(self, y: float, speed: float) -> None:
+        if not hasattr(RocketFoe, 'facet'):
+            self.load_assets()
+
+        self.x: float = RESOLUTION[0]
+        self.y = y
+        self.dx = speed
+        self.dy: float = 0.0
+        self.hp: int = 3
+        self.sensor: FoeSensor | None = None
+
+    @property
+    def radius(self) -> float:
+        return 32
+
+    async def draw(self, surface: Surface) -> None:
+        self.blit(dest=surface, src=self.facet)
+
+    async def update(self, delta: float) -> Action | None:
+        if self.sensor is None:
+            self.sensor = FoeSensor(self)
+            return Action.register(self.sensor)
+
+        self.x -= self.dx * delta
+        self.y += clamp(self.dy, -100, 100) * delta
+        self.dy -= self.dy * delta
+        if self.x + self.facet.get_width() / 2 < 0:
+            return Action.remove(self)
+
     async def on_close(self) -> Action | None:
         if self.sensor:
             return Action.remove(self.sensor)
+
+
+class ShooterFoe(Foe):
+
+    z: int = 10
+
+    def __new__(cls, y: float, speed: float) -> 'Foe':
+        return Collider.__new__(cls)
+
+    @classmethod
+    def load_assets(cls) -> None:
+        cls.facet = pygame.transform.scale(
+            pygame.image.load('assets/foe-2.png').convert_alpha(),
+            (64, 40),
+        )
+
+    def __init__(self, y: float, speed: float) -> None:
+        if not hasattr(ShooterFoe, 'facet'):
+            self.load_assets()
+
+        self.x: float = RESOLUTION[0]
+        self.y = y
+        self.hp: int = 10 + randint(0, 4)
+        self.dx = speed
+        self.dy: float = 0.0
+        self.r = 2 - random() * 4
+        self.sensor: FoeSensor | None = None
+
+    @property
+    def radius(self) -> float:
+        return 32
+
+    async def draw(self, surface: Surface) -> None:
+        self.blit(dest=surface, src=self.facet)
+
+    async def update(self, delta: float) -> Action | None:
+        self.x -= self.dx * delta
+        self.dx -= self.dx * delta / 2
+        self.y += math.sin(self.dy) * self.r
+        self.dy += delta
