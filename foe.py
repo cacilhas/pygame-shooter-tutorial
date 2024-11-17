@@ -160,7 +160,7 @@ class LaserProofFoe(RocketFoe):
         super().__init__(y, speed)
         self.idx: float = 0.0
         self.facet = self.facets[0]
-        self.hp: int = 6
+        self.hp: int = 1
 
     @property
     def radius(self) -> float:
