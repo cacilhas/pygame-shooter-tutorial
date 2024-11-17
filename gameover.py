@@ -8,6 +8,8 @@ from consts import RESOLUTION
 
 class GameOver(Actor):
 
+    z: int = 20
+
     def __init__(self) -> None:
         self.font = Font('assets/game-over.ttf', 120)
         self.aux_font = Font('assets/digital-7.ttf', 24)

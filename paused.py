@@ -8,6 +8,8 @@ from consts import RESOLUTION
 
 class Paused(Actor):
 
+    z: int = 20
+
     def __init__(self) -> None:
         self.font = Font('assets/game-over.ttf', 120)
         self.populate()
