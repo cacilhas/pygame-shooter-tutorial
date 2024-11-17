@@ -13,6 +13,8 @@ from sounds import AudioBag
 
 class Foe(Collider):
 
+    __inited: bool = False
+
     facet: Surface
     x: float
     y: float
@@ -21,7 +23,15 @@ class Foe(Collider):
     hp: int
 
     def __new__(cls, y: float, speed: float) -> 'Foe':
-        return ShooterFoe(y, speed) if random() < 0.125 else RocketFoe(y, speed)
+        if not Foe.__inited:
+            RocketFoe.load_assets()
+            ShooterFoe.load_assets()
+            LaserProofFoe.load_assets()
+            Foe.__inited = True
+
+        if random() < 0.125:
+            return ShooterFoe(y, speed)
+        return LaserProofFoe(y, speed) if random() < 0.25 else RocketFoe(y, speed)
 
     @property
     def xy(self) -> tuple[float, float]:
@@ -65,9 +75,6 @@ class RocketFoe(Foe):
         )
 
     def __init__(self, y: float, speed: float) -> None:
-        if not hasattr(RocketFoe, 'facet'):
-            self.load_assets()
-
         self.x: float = RESOLUTION[0]
         self.y = y
         self.dx = speed
@@ -109,24 +116,20 @@ class ShooterFoe(Foe):
     def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
             pygame.image.load('assets/foe-2.png').convert_alpha(),
-            (64, 40),
+            (75, 100),
         )
 
     def __init__(self, y: float, speed: float) -> None:
-        if not hasattr(ShooterFoe, 'facet'):
-            self.load_assets()
-
         self.x: float = RESOLUTION[0]
         self.y = y
         self.hp: int = 10 + randint(0, 4)
         self.dx = speed
         self.dy: float = 0.0
         self.r = 2 - random() * 4
-        self.sensor: FoeSensor | None = None
 
     @property
     def radius(self) -> float:
-        return 32
+        return 37.5
 
     async def draw(self, surface: Surface) -> None:
         self.blit(dest=surface, src=self.facet)
@@ -140,3 +143,45 @@ class ShooterFoe(Foe):
         if random() < 0.03125:
             from enemy_fire import EnemyFire
             return Action.register(EnemyFire(self))
+
+
+class LaserProofFoe(RocketFoe):
+
+    facets: list[Surface] = []
+
+    @classmethod
+    def load_assets(cls) -> None:
+        cls.facets = [
+            pygame.image.load(f'assets/foe-3/{idx}.png').convert_alpha()
+            for idx in range(12)
+        ]
+
+    def __init__(self, y: float, speed: float) -> None:
+        super().__init__(y, speed)
+        self.idx: float = 0.0
+        self.facet = self.facets[0]
+        self.hp: int = 6
+
+    @property
+    def radius(self) -> float:
+        return 32
+
+    async def update(self, delta: float) -> Action | None:
+        self.idx += delta * 4
+        self.facet = self.facets[int(self.idx) % 12]
+        actions: list[Action] = []
+        action = await super().update(delta)
+        if action:
+            actions.append(action)
+
+        if random() < 0.03125:
+            from enemy_fire import EnemyFire
+            actions.append(Action.register(EnemyFire(self)))
+
+        if actions:
+            return Action.set(*actions)
+
+    async def on_collision(self, other: Collider) -> Action | None:
+        if isinstance(other, Fire) and other.power in [2, 3]:
+            return Action.remove(other)
+        return await super().on_collision(other)
