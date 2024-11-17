@@ -167,7 +167,7 @@ class LaserProofFoe(RocketFoe):
         return 32
 
     async def update(self, delta: float) -> Action | None:
-        self.idx += delta * 4
+        self.idx += delta * 10
         self.facet = self.facets[int(self.idx) % 12]
         actions: list[Action] = []
         action = await super().update(delta)
