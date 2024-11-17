@@ -4,6 +4,7 @@ from pygame import Surface
 import pygame
 from action import Action, Collider
 from consts import RESOLUTION
+from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
 from foe import RocketFoe
@@ -52,7 +53,7 @@ class Meteor(Collider):
         self.blit(dest=surface, src=facet)
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (RocketFoe, Fire)):
+        if isinstance(other, (RocketFoe, Fire, EnemyFire)):
             actions: list[Action] = []
 
             if not (isinstance(other, Fire) and other.power == 4):

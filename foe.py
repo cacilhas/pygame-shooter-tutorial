@@ -122,10 +122,19 @@ class ShooterFoe(Foe):
     def __init__(self, y: float, speed: float) -> None:
         self.x: float = RESOLUTION[0]
         self.y = y
-        self.hp: int = 10 + randint(0, 4)
+        self.max_hp = self.hp = 10 + randint(0, 4)
         self.dx = speed
         self.dy: float = 0.0
+        self.osc: float = 0.0
         self.r = 2 - random() * 4
+
+    @property
+    def f(self) -> float:
+        return 1.0 - self.hp / self.max_hp
+
+    @property
+    def xy(self) -> tuple[float, float]:
+        return self.x + math.sin(self.osc) * self.f * 48, self.y
 
     @property
     def radius(self) -> float:
@@ -139,6 +148,7 @@ class ShooterFoe(Foe):
         self.dx -= self.dx * delta / 2
         self.y += math.sin(self.dy) * self.r
         self.dy += delta
+        self.osc += 10 * self.f * delta
 
         if random() < 0.03125:
             from enemy_fire import EnemyFire
