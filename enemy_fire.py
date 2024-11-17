@@ -60,8 +60,8 @@ class EnemyFire(Collider):
                 return
 
             from explosion import Explosion
-            return Action.set(
-                Action.remove(self),
-                Action.remove(foe),
-                Action.register(Explosion(pos=self.pos, size=120)),
-            )
+            return Action.remove(self)
+
+        from player import Player
+        if isinstance(other, Player):
+            return Action.remove(self)

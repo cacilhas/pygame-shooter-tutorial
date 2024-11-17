@@ -31,8 +31,3 @@ class FoeForceField(Collider):
 
         facet = self.facet = Surface((self.size*2, self.size*2), pygame.SRCALPHA)
         pygame.draw.arc(facet, 'yellow', facet.get_rect(), 0.0, 360.0, width=4)
-
-    async def on_collision(self, other: 'Collider') -> Action | None:
-        from fire import Fire
-        if isinstance(other, Fire) and other.power not in [4, 5]:
-            return Action.remove(other)

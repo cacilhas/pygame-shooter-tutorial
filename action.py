@@ -1,3 +1,4 @@
+import asyncio
 import math
 from types import ModuleType
 from typing import Any, Callable, Iterable, Type, TypeIs
@@ -168,6 +169,9 @@ class __RemoveIf(Action):
         self.check = cb
 
 
+ActionPair = tuple[Action | None, Action | None]
+
+
 #--------#----------------------------------------------------------------------
 # Actors #
 #--------#
@@ -224,8 +228,8 @@ class Collider(Actor):
     async def on_collision(self, other: 'Collider') -> Action | None:
         ...
 
-    async def _process_collision(self, other: 'Collider') -> Action | None:
-        action = await self.on_collision(other)
-        if action:
-            return action
-        return await other.on_collision(self)
+    async def _process_collision(self, other: 'Collider') -> ActionPair:
+        return await asyncio.gather(
+            self.on_collision(other),
+            other.on_collision(self),
+        )

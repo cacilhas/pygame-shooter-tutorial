@@ -134,16 +134,19 @@ class Player(Collider):
             self.dx += 1
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (Foe, EnemyFire, FoeForceField)):
-            return Action.set(
-                Action.remove(self),
-                Action.remove(other),
-                Action.register(Explosion(pos=self.pos, size=120)),
-                Action.player_hit(),
-            )
-        if isinstance(other, Meteor):
+        if isinstance(other, (EnemyFire, Foe, FoeForceField, Meteor)):
             return Action.set(
                 Action.remove(self),
                 Action.register(Explosion(pos=self.pos, size=120)),
                 Action.player_hit(),
             )
+
+        from powerup import PowerUp
+        if isinstance(other, PowerUp):
+            if other.power < 4:
+                self.power = other.power
+            elif other.power == 4:
+                self.previous_power = self.power
+                self.power = 4
+            elif other.power == 5:
+                return  Action.register(Fire(self.pos, 0, power=5))

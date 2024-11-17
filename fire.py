@@ -86,7 +86,7 @@ class Fire(Collider):
                 case 2 | 3:
                     return Action.play_audio(AudioBag.laser) if random() < 0.5 else None
 
-                case 4:
+                case 4 | 5:
                     return Action.play_audio(AudioBag.explosions[1])
 
                 case _:
@@ -102,16 +102,7 @@ class Fire(Collider):
             color = (0x00,0xff, 0xbb, min(255, int(256 - (256.0 * self.radius / 1280.0))))
             pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
             self.facet = facet
-
-            from foe import Foe
-            def scoreit(actor: Actor) -> Action | None:
-                if isinstance(actor, Foe):
-                    return Action.set(
-                        Action.incr_score(10),
-                        Action.remove(actor),
-                    )
-
-            return Action.for_each(scoreit)
+            return
 
         width, height = self.facet.get_size()
         speed = self.speed * delta
@@ -119,5 +110,13 @@ class Fire(Collider):
         self.x += dx
         self.y += dy
 
-        if self.x > RESOLUTION[0] + width / 2:
+        if self.x > RESOLUTION[0]:
             return Action.remove(self)
+
+    async def on_collision(self, other: 'Collider') -> Action | None:
+        if self.power not in [4, 5]:
+            from foe import Foe
+            from foe_force_field import FoeForceField
+            from meteor import Meteor
+            if isinstance(other, (Foe, FoeForceField, Meteor)):
+                return Action.remove(self)

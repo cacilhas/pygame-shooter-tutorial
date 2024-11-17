@@ -1,10 +1,12 @@
 import math
 from random import randint, random
+from typing import Iterable
 from pygame import Surface
 import pygame
 from pygame.math import clamp
 from action import Action, Collider
 from consts import FPS, RESOLUTION
+from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
 from foe_sensor import FoeSensor
@@ -38,20 +40,20 @@ class Foe(Collider):
         return self.x, self.y
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, Fire):
+        if isinstance(other, (Fire, EnemyFire)):
             self.hp -= 1
+
             if self.hp <= 0:
-                return Action.set(
+                actions = [
                     Action.register(Explosion(pos=self.pos, size=72)),
                     Action.remove(self),
-                    Action.remove(other),
-                    Action.incr_score(10),
-                )
+                ]
+                if isinstance(other, Fire):
+                    actions.append(Action.incr_score(10))
+                return Action.set(*actions)
+
             else:
-                return Action.set(
-                    Action.remove(other),
-                    Action.play_audio(AudioBag.explosions[0])
-                )
+                return Action.play_audio(AudioBag.explosions[0])
 
         if isinstance(other, Foe):
             if self.y < other.y:
@@ -97,12 +99,24 @@ class RocketFoe(Foe):
         self.x -= self.dx * delta
         self.y += clamp(self.dy, -100, 100) * delta
         self.dy -= self.dy * delta
-        if self.x + self.facet.get_width() / 2 < 0:
-            return Action.remove(self)
+        if self.x + self.facet.get_width() < 0:
+            return self.remove_self()
 
-    async def on_close(self) -> Action | None:
+    def remove_self(self) -> Action:
+        action = Action.remove(self)
         if self.sensor:
-            return Action.remove(self.sensor)
+            action = Action.set(action, Action.remove(self.sensor))
+        return action
+
+    async def on_collision(self, other: Collider) -> Action | None:
+        from meteor import Meteor
+        if isinstance(other, Meteor):
+            return Action.set(
+                self.remove_self(),
+                Action.register(Explosion(pos=other.pos, size=72)),
+                Action.play_audio(AudioBag.explosions[0]),
+            )
+        return await super().on_collision(other)
 
 
 class ShooterFoe(Foe):
@@ -154,6 +168,11 @@ class ShooterFoe(Foe):
             from enemy_fire import EnemyFire
             return Action.register(EnemyFire(self))
 
+    async def on_collision(self, other: Collider) -> Action | None:
+        if isinstance(other, EnemyFire) and other.shooter is self:
+            return
+        return await super().on_collision(other)
+
 
 class LaserProofFoe(RocketFoe):
 
@@ -194,8 +213,7 @@ class LaserProofFoe(RocketFoe):
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, Fire) and other.power in [2, 3]:
             from foe_force_field import FoeForceField
-            return Action.set(
-                Action.remove(other),
-                Action.register(FoeForceField(self.xy, self.dx)),
-            )
+            return Action.register(FoeForceField(self.xy, self.dx))
+        if isinstance(other, EnemyFire) and other.shooter is self:
+            return
         return await super().on_collision(other)

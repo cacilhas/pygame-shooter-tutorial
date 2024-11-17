@@ -7,7 +7,7 @@ from pygame import Surface
 from pygame.mixer import Sound
 from pygame.time import Clock
 
-from action import Action, Actor, Collider
+from action import Action, ActionPair, Actor, Collider
 from consts import BACKGROUND, FPS, RESOLUTION
 from fps import FpsDisplay
 from gameover import GameOver
@@ -19,6 +19,7 @@ from score import Score
 from sounds import AudioBag
 from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
 from stars import StarsBackground
+from util import flatten
 
 
 class App:
@@ -69,13 +70,14 @@ class App:
         if len(colliders) < 2:
             return []
 
-        futures: list[Coroutine[None, None, Action | None]] = [
+        futures: list[Coroutine[None, None, ActionPair]] = [
             actor1._process_collision(actor2)
             for i, actor1 in enumerate(colliders[:len(colliders)-1])
             for actor2 in colliders[i+1:]
             if actor1.is_colliding(actor2)
         ]
-        return [action for action in await asyncio.gather(*futures) if action]
+        first, sec = zip(*await asyncio.gather(*futures)) if futures else ([], [])
+        return [action for action in first + sec if action]
 
     async def update(self) -> None:
         """

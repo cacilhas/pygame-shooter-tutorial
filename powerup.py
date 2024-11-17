@@ -72,42 +72,22 @@ class PowerUp(Collider):
             player: Player = other
             audio: Sound
 
-            if player.power < self.power and self.power != 5:
+            if self.power == 5:
+                # Double explosion sound
+                audio = AudioBag.explosions[1]
+            elif player.power < self.power:
                 audio = AudioBag.power_up
             elif player.power > self.power:
                 audio = AudioBag.power_down
-            elif self.power == 5:
-                audio = AudioBag.explosions[1]
             else:
                 audio = AudioBag.catch
+            score_up = 100 if self.power == 0 else 20 + self.power * 10
 
-            actions: list[Action] = [
+            return Action.set(
                 Action.remove(self),
                 Action.play_audio(audio),
-            ]
-
-            score_up = 100 if self.power == 0 else 20 + self.power * 10
-            actions.append(Action.incr_score(score_up))
-
-            if self.power == 5:
-                from fire import Fire
-                from foe import Foe
-                from meteor import Meteor
-                def scoreit(actor: Actor) -> Action | None:
-                    if isinstance(actor, (Foe, Meteor)):
-                        return Action.set(
-                            Action.incr_score(10),
-                            Action.remove(actor),
-                        )
-                actions.extend([
-                    Action.for_each(scoreit),
-                    Action.register(Fire(self.pos, 0, power=5)),
-                ])
-
-            else:
-                player.power = self.power
-
-            return Action.set(*actions)
+                Action.incr_score(score_up),
+            )
 
 
 colors = [

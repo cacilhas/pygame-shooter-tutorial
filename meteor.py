@@ -53,16 +53,16 @@ class Meteor(Collider):
         self.blit(dest=surface, src=facet)
 
     async def on_collision(self, other: Collider) -> Action | None:
-        if isinstance(other, (RocketFoe, Fire, EnemyFire)):
-            actions: list[Action] = []
+        if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, RocketFoe):
+            return Action.set(
+                Action.register(Explosion(pos=other.pos, size=72)),
+                Action.play_audio(AudioBag.explosions[0]),
+            )
 
-            if not (isinstance(other, Fire) and other.power == 4):
-                actions.append(Action.remove(other))
-
-            if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, RocketFoe):
-                actions.extend([
-                    Action.register(Explosion(pos=other.pos, size=72)),
-                    Action.play_audio(AudioBag.explosions[0])
-                ])
-
-            return Action.set(*actions)
+        if isinstance(other, Fire) and other.power == 5:
+            return Action.set(
+                Action.remove(self),
+                Action.register(Explosion(pos=other.pos, size=72)),
+                Action.play_audio(AudioBag.explosions[0]),
+                Action.incr_score(10),
+            )
