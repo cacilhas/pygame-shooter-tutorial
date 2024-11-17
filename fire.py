@@ -19,15 +19,14 @@ class Fire(Collider):
         )
         laser = Surface((24, 24), pygame.SRCALPHA)
         pygame.draw.line(laser, 'red', (0,12), (24,12), 2)
-        nuke = Surface((1280, 1280), pygame.SRCALPHA)
-        pygame.draw.circle(nuke, '#00bbff88', (640, 640), 640)
+        fake_nuke = Surface((1, 1), pygame.SRCALPHA)
         cls.facets.extend([
             bullet,
             bullet,
             laser,
             laser,
-            nuke,
-            nuke,
+            fake_nuke,
+            fake_nuke,
         ])
 
     def __init__(self, pos: tuple[float, float], angle: float, *, power: int, quiet: bool=False) -> None:
@@ -69,7 +68,9 @@ class Fire(Collider):
         if self.power in [2, 3]:
             facet = pygame.transform.rotate(self.facet, -self.angle * 180 / math.pi)
         elif self.power in [4, 5]:
-            facet = pygame.transform.scale(self.facet, (self.radius, self.radius))
+            facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
+            color = (0x00,0xbb, 0xff, min(255, int(256 - (256.0 * self.radius / 1280.0))))
+            pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
         else:
             facet = self.facet
         self.blit(dest=surface, src=facet)
@@ -96,7 +97,7 @@ class Fire(Collider):
                     return Action.play_audio(AudioBag.bullet)
 
         if self.power in [4, 5]:
-            self._radius += self.speed * delta
+            self._radius += math.sqrt(self.speed * self._radius) * 5 * delta
 
             if self.radius > 1280:
                 return Action.remove(self)
