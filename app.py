@@ -14,6 +14,7 @@ from gameover import GameOver
 from life import Lives
 from paused import Paused
 from player import Player
+from powerup import PowerUp
 from reload import Reload
 from score import Score
 from sounds import AudioBag
@@ -106,8 +107,8 @@ class App:
 
         self.actors = [
             actor for actor in self.actors
-            if -2 * (1+actor.radius) < actor.pos[0] < RESOLUTION[0] + 2 * (1+actor.radius)
-            or isinstance(actor, StarsBackground)
+            if isinstance(actor, StarsBackground)
+            or -2 * (1+actor.radius) < actor.pos[0] < RESOLUTION[0] + 2 * (1+actor.radius)
         ]
 
     async def process(self, action: Action) -> None:
@@ -162,6 +163,17 @@ class App:
                 if not action.check(actor):
                     actors.append(actor)
             self.actors = actors
+            return
+
+        if Action.isSpawnShield(action):
+            for actor in self.actors:
+                if isinstance(actor, PowerUp) and actor.power == PowerUp.shield:
+                    return
+            else:
+                y = random.randint(24, RESOLUTION[1] - 24)
+                speed = 50 + random.random() * 50
+                self.actors.append(PowerUp(y, speed, power=PowerUp.shield))
+            return
 
     async def draw(self) -> None:
         """

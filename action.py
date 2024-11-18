@@ -22,6 +22,7 @@ class Action:
     __PlayerHit: 'type[__PlayerHit]'
     __RemoveActor: 'type[__RemoveActor]'
     __RemoveIf: 'type[__RemoveIf]'
+    __SpawnShield: 'type[__SpawnShield]'
 
     #-----#
 
@@ -61,6 +62,10 @@ class Action:
     def set(cls, *actions: 'Action') -> 'Action':
         return cls.__ActionSet(actions)
 
+    @classmethod
+    def spawn_shield(cls) -> 'Action':
+        return cls.__SpawnShield()
+
     #-----#
 
     @classmethod
@@ -98,6 +103,10 @@ class Action:
     @classmethod
     def isRemoveIf(cls, action) -> TypeIs['__RemoveIf']:
         return isinstance(action, cls.__RemoveIf)
+
+    @classmethod
+    def isSpawnShield(cls, action) -> TypeIs['__SpawnShield']:
+        return isinstance(action, cls.__SpawnShield)
 
     def __len__(self) -> int:
         return 1
@@ -165,8 +174,15 @@ class __RemoveActor(Action):
 
 @register_subclass
 class __RemoveIf(Action):
+
     def __init__(self, cb: Callable[['Actor'], bool]) -> None:
         self.check = cb
+
+
+@register_subclass
+class __SpawnShield(Action):
+
+    ...
 
 
 ActionPair = tuple[Optional[Action], Optional[Action]]

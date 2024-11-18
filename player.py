@@ -70,13 +70,6 @@ class Player(Collider):
         self.no_fire = 0.0
         self._power = value
 
-    def spawn_shield(self) -> Action:
-        from powerup import PowerUp
-        y = randint(24, RESOLUTION[1] - 24)
-        speed = 50 + random() * 50
-        self.may_spawn_shield = 10.0
-        return Action.register(PowerUp(y, speed, power=PowerUp.shield))
-
     async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(
             self.facet,
@@ -92,24 +85,27 @@ class Player(Collider):
         self.x = max([0, min([RESOLUTION[0] * 2/3, self.x])])
         self.y = max([0, min([RESOLUTION[1], self.y])])
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
-        self.may_spawn_shield -= delta
-        self.may_spawn_shield = max(0.0, self.may_spawn_shield)
 
-        if self.may_spawn_shield == 0 and self.shield is None:
-            return self.spawn_shield()
+        actions: list[Action] = []
+        if self.shield is None:
+            actions.append(Action.spawn_shield())
 
         if self.keys[4] and self.no_fire == 0:
             fire = Fire(self.xy, self.angle, power=self.power)
             self.no_fire = fire.delay
+            actions.append(Action.register(fire))
             play_audio: Action | None = None
             if self.power == 4:
                 self.shots -= 1
                 if self.shots <= 0:
-                    play_audio = Action.play_audio(AudioBag.power_down)
+                    actions.append(Action.play_audio(AudioBag.power_down))
                     self._power = self.previous_power
                     self.no_fire = 0.5
-            register_fire = Action.register(fire)
-            return Action.set(play_audio, register_fire) if play_audio else register_fire
+
+        if len(actions) == 1:
+            return actions[0]
+        elif actions:
+            return Action.set(*actions)
 
     async def react(self, events: list[Event]) -> None:
         async for event in async_gen(ev for ev in events if ev.type == pygame.KEYUP):
