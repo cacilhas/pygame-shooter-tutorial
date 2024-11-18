@@ -171,6 +171,9 @@ class ShooterFoe(Foe):
     async def on_collision(self, other: Collider) -> Action | None:
         if isinstance(other, EnemyFire) and other.shooter is self:
             return
+        from player import Player
+        if isinstance(other, Player):
+            return Action.remove(self)
         return await super().on_collision(other)
 
 
@@ -216,4 +219,7 @@ class LaserProofFoe(RocketFoe):
             return Action.register(FoeForceField(self.xy, self.dx))
         if isinstance(other, EnemyFire) and other.shooter is self:
             return
+        from player import Player
+        if isinstance(other, Player):
+            return self.remove_self()
         return await super().on_collision(other)
