@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Optional, Protocol
 import pygame
 from pygame.surface import Surface
 from action import Action, Collider
@@ -43,7 +43,7 @@ class EnemyFire(Collider):
     async def draw(self, surface: Surface) -> None:
         return self.blit(dest=surface, src=self.facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         if not self.started:
             self.started = True
             return Action.play_audio(AudioBag.explosions[0])
@@ -52,7 +52,7 @@ class EnemyFire(Collider):
         if self.x < -self.radius:
             return Action.remove(self)
 
-    async def on_collision(self, other: 'Collider') -> Action | None:
+    async def on_collision(self, other: 'Collider') -> Optional[Action]:
         from foe import Foe
         if isinstance(other, Foe):
             foe: Foe = other

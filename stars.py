@@ -35,7 +35,7 @@ class StarsBackground(Actor):
                 color = choice(self.colors)
                 pygame.draw.circle(facet, color, (x, y), i + 1)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> None:
         for i, speed in enumerate(self.speeds):
             self.xs[i] -= speed * delta
             if self.xs[i] < 0:

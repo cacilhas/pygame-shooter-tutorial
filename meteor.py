@@ -1,8 +1,9 @@
 import math
 from random import choice
+from typing import Optional
 from pygame import Surface
 import pygame
-from action import Action, Collider
+from action import Action, Actor, Collider
 from consts import RESOLUTION
 from enemy_fire import EnemyFire
 from explosion import Explosion
@@ -42,7 +43,7 @@ class Meteor(Collider):
     def xy(self) -> tuple[float, float]:
         return self.x, self.y
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.x -= self.speed * delta
         if self.x < -self.facet.get_width():
             return Action.remove(self)
@@ -52,7 +53,7 @@ class Meteor(Collider):
         facet = pygame.transform.rotate(self.facet, self.angle * 180 / math.pi)
         self.blit(dest=surface, src=facet)
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, RocketFoe):
             return Action.set(
                 Action.register(Explosion(pos=other.pos, size=72)),

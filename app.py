@@ -1,7 +1,7 @@
 import asyncio
 import random
 import sys
-from typing import Coroutine, DefaultDict, Iterable, NoReturn
+from typing import Coroutine, DefaultDict, Iterable, NoReturn, Optional
 import pygame
 from pygame import Surface
 from pygame.mixer import Sound
@@ -19,7 +19,6 @@ from score import Score
 from sounds import AudioBag
 from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
 from stars import StarsBackground
-from util import flatten
 
 
 class App:
@@ -38,7 +37,7 @@ class App:
             vsync=1,
         )
         self.paused_display = Paused()
-        self.actions: list[Action | None] = []
+        self.actions: list[Optional[Action]] = []
         self.sounds: list[Sound] = []
         pygame.mixer_music.load('assets/song.wav')
 

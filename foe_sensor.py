@@ -23,7 +23,7 @@ class FoeSensor(Collider):
     def radius(self) -> float:
         return 100
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> None:
         if other is self.foe:
             return
 

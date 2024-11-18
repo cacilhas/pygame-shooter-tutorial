@@ -15,7 +15,7 @@ class Paused(Actor):
         self.populate()
 
     def populate(self) -> None:
-        text: Surface =  self.font.render('Paused', True, '#001122')
+        text: Surface = self.font.render('Paused', True, '#001122')
         size: tuple[int, int] = text.get_size()
         size = size[0] + 4, size[1] + 3
         facet = self.facet = Surface(size, pygame.SRCALPHA)

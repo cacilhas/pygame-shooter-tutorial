@@ -1,3 +1,4 @@
+from typing import Optional
 import pygame
 from pygame.surface import Surface
 from action import Action, Collider
@@ -22,7 +23,7 @@ class FoeForceField(Collider):
     async def draw(self, surface: Surface) -> None:
         return self.blit(dest=surface, src=self.facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.size += self.size * 5 * delta
         self.x -= self.speed * delta
 

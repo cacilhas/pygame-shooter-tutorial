@@ -1,6 +1,6 @@
 import math
 from random import randint, random
-from typing import Iterable
+from typing import Iterable, Optional
 from pygame import Surface
 import pygame
 from pygame.math import clamp
@@ -39,7 +39,7 @@ class Foe(Collider):
     def xy(self) -> tuple[float, float]:
         return self.x, self.y
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, (Fire, EnemyFire)):
             self.hp -= 1
 
@@ -91,7 +91,7 @@ class RocketFoe(Foe):
     async def draw(self, surface: Surface) -> None:
         self.blit(dest=surface, src=self.facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         if self.sensor is None:
             self.sensor = FoeSensor(self)
             return Action.register(self.sensor)
@@ -108,7 +108,7 @@ class RocketFoe(Foe):
             action = Action.set(action, Action.remove(self.sensor))
         return action
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         from meteor import Meteor
         if isinstance(other, Meteor):
             return Action.set(
@@ -123,7 +123,7 @@ class ShooterFoe(Foe):
 
     z: int = 10
 
-    def __new__(cls, y: float, speed: float) -> 'Foe':
+    def __new__(cls, y: float, speed: float) -> Foe:
         return Collider.__new__(cls)
 
     @classmethod
@@ -157,7 +157,7 @@ class ShooterFoe(Foe):
     async def draw(self, surface: Surface) -> None:
         self.blit(dest=surface, src=self.facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.x -= self.dx * delta
         self.dx -= self.dx * delta / 2
         self.y += math.sin(self.dy) * self.r
@@ -168,7 +168,7 @@ class ShooterFoe(Foe):
             from enemy_fire import EnemyFire
             return Action.register(EnemyFire(self))
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, EnemyFire) and other.shooter is self:
             return
         from player import Player
@@ -198,7 +198,7 @@ class LaserProofFoe(RocketFoe):
     def radius(self) -> float:
         return 32
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.idx += delta * 10
         self.facet = self.facets[int(self.idx) % 12]
         actions: list[Action] = []
@@ -213,7 +213,7 @@ class LaserProofFoe(RocketFoe):
         if actions:
             return Action.set(*actions)
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, Fire) and other.power in [2, 3]:
             from foe_force_field import FoeForceField
             return Action.register(FoeForceField(self.xy, self.dx))

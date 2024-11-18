@@ -1,5 +1,6 @@
 from math import isinf
 from random import randint, random
+from typing import Optional
 
 from pygame import Surface
 import pygame
@@ -59,7 +60,7 @@ class PowerUp(Collider):
     def radius(self) -> float:
         return 24
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.x -= self.speed * delta
         if self.x < -self.facet.get_width():
             return Action.remove(self)
@@ -67,7 +68,7 @@ class PowerUp(Collider):
     async def draw(self, surface: Surface) -> None:
         return self.blit(dest=surface, src=self.facet)
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, Player):
             player: Player = other
             audio: Sound

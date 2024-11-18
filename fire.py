@@ -1,5 +1,6 @@
 import math
 from random import random
+from typing import Optional
 from pygame import Surface
 import pygame
 from action import Action, Actor, Collider
@@ -71,7 +72,7 @@ class Fire(Collider):
             facet = self.facet
         self.blit(dest=surface, src=facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         if self.power in [1, 3]:
             # Triple shoot
             self.power -= 1
@@ -113,7 +114,7 @@ class Fire(Collider):
         if self.x > RESOLUTION[0]:
             return Action.remove(self)
 
-    async def on_collision(self, other: 'Collider') -> Action | None:
+    async def on_collision(self, other: 'Collider') -> Optional[Action]:
         if self.power not in [4, 5]:
             from foe import Foe
             from foe_force_field import FoeForceField

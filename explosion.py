@@ -1,4 +1,5 @@
 
+from typing import Optional
 from pygame import Surface
 import pygame
 from action import Action, Actor
@@ -34,7 +35,7 @@ class Explosion(Actor):
         self.frame: float = 0
         self.started: bool = False
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         if not self.started:
             self.started = True
             return Action.play_audio(AudioBag.explosions[1])

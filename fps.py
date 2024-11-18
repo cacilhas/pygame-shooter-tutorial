@@ -14,7 +14,7 @@ class FpsDisplay(Actor):
         self.text = 'FPS: 0.0'
         self.present = False
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> None:
         fps = 1 / delta
         self.text = f'FPS: {fps:.1f}'
 

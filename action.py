@@ -1,7 +1,7 @@
 import asyncio
 import math
 from types import ModuleType
-from typing import Any, Callable, Iterable, Type, TypeIs
+from typing import Any, Callable, Iterable, Optional, Type, TypeIs
 from pygame import Surface
 from pygame.event import Event
 from pygame.mixer import Sound
@@ -30,7 +30,7 @@ class Action:
         return cls.__DecreaseLives()
 
     @classmethod
-    def for_each(cls, cb: Callable[['Actor'], 'Action | None']):
+    def for_each(cls, cb: Callable[['Actor'], Optional['Action']]):
         return cls.__ForEach(cb)
 
     @classmethod
@@ -132,7 +132,7 @@ class __DecreaseLives(Action):
 class __ForEach(Action):
 
     # TODO: make it async
-    def __init__(self, cb: Callable[['Actor'], Action | None]) -> None:
+    def __init__(self, cb: Callable[['Actor'], Optional[Action]]) -> None:
         self.cb = cb
 
 
@@ -169,7 +169,7 @@ class __RemoveIf(Action):
         self.check = cb
 
 
-ActionPair = tuple[Action | None, Action | None]
+ActionPair = tuple[Optional[Action], Optional[Action]]
 
 
 #--------#----------------------------------------------------------------------
@@ -198,7 +198,7 @@ class Actor:
         width, height = src.get_size()
         dest.blit(src, (x - width/2, y - height/2))
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         ...
 
     async def draw(self, surface: Surface) -> None:
@@ -225,7 +225,7 @@ class Collider(Actor):
     def is_colliding(self, other: 'Collider') -> bool:
         return self.distance(other) <= self.radius + other.radius
 
-    async def on_collision(self, other: 'Collider') -> Action | None:
+    async def on_collision(self, other: 'Collider') -> Optional[Action]:
         ...
 
     async def _process_collision(self, other: 'Collider') -> ActionPair:

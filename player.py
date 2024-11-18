@@ -1,4 +1,5 @@
 import math
+from typing import Optional
 import pygame
 from pygame import Surface
 from pygame.event import Event
@@ -72,7 +73,7 @@ class Player(Collider):
         )
         self.blit(dest=surface, src=facet)
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.no_fire = max([0, self.no_fire - delta])
         self.x += self.speed * self.dx * delta
         self.y += self.speed * self.dy * delta
@@ -133,7 +134,7 @@ class Player(Collider):
         if self.keys[3]:
             self.dx += 1
 
-    async def on_collision(self, other: Collider) -> Action | None:
+    async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, (EnemyFire, Foe, FoeForceField, Meteor)):
             return Action.set(
                 Action.remove(self),

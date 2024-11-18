@@ -1,5 +1,6 @@
 import math
 from random import randint, random
+from typing import Optional
 from action import Action, Actor
 from consts import RESOLUTION
 from foe import Foe
@@ -14,7 +15,7 @@ class FoeSpawner(Actor):
         self.max_wait_time: float = 5.0
         self.reset: float | None = None
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
 
@@ -42,7 +43,7 @@ class MeteorSpawner(Actor):
         self.wait_time: float = 10.0
         self.max_wait_time: float = 20.0
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
         if self.wait_time == 0:
@@ -61,7 +62,7 @@ class PowerUpSpawner(Actor):
         self.max_wait_time: float = 20.0
         self.wait_time: float = self.min_wait_time
 
-    async def update(self, delta: float) -> Action | None:
+    async def update(self, delta: float) -> Optional[Action]:
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
         if self.wait_time == 0:
