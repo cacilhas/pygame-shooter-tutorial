@@ -148,19 +148,12 @@ class App:
                 self.actors.remove(action.actor)
             except ValueError:
                 print(sys.stderr, f'{action.actor} was supposed to be in the actors list')
-            on_close = await action.actor.on_close()
-            if on_close:
-                self.actions.append(on_close)
             return
 
         if Action.isRemoveIf(action):
             actors: list[Actor] = []
             for actor in self.actors:
-                if action.check(actor):
-                    on_close = await actor.on_close()
-                    if on_close:
-                        self.actions.append(on_close)
-                else:
+                if not action.check(actor):
                     actors.append(actor)
             self.actors = actors
 

@@ -41,7 +41,10 @@ class Foe(Collider):
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, (Fire, EnemyFire)):
-            self.hp -= 1
+            if isinstance(other, Fire) and other.power in [4, 5]:
+                self.hp = 0
+            else:
+                self.hp -= 1
 
             if self.hp <= 0:
                 actions = [

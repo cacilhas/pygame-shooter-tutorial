@@ -216,9 +216,6 @@ class Actor:
     def distance(self, other: 'Actor') -> float:
         return math.sqrt(self.squared_distance(other))
 
-    async def on_close(self) -> Action | None:
-        ...
-
 
 class Collider(Actor):
 
