@@ -17,7 +17,7 @@ from player import Player
 from reload import Reload
 from score import Score
 from sounds import AudioBag
-from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner, ShieldSpawner
+from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
 from stars import StarsBackground
 
 
@@ -50,7 +50,6 @@ class App:
             FoeSpawner(),
             PowerUpSpawner(),
             MeteorSpawner(),
-            ShieldSpawner(),
             FpsDisplay(),
             Score(self),
             Player(),
@@ -104,6 +103,12 @@ class App:
             for audio in self.sounds:
                 audio.play()
             self.sounds = []
+
+        self.actors = [
+            actor for actor in self.actors
+            if -2 * (1+actor.radius) < actor.pos[0] < RESOLUTION[0] + 2 * (1+actor.radius)
+            or isinstance(actor, StarsBackground)
+        ]
 
     async def process(self, action: Action) -> None:
         """

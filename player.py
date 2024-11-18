@@ -1,4 +1,5 @@
 import math
+from random import randint, random
 from typing import Optional
 import pygame
 from pygame import Surface
@@ -46,6 +47,7 @@ class Player(Collider):
         self.previous_power: int = 0
         self.shots: int = 0
         self.shield: Optional[Shield] = None
+        self.may_spawn_shield: float = 0.0
 
     @property
     def radius(self) -> float:
@@ -68,6 +70,13 @@ class Player(Collider):
         self.no_fire = 0.0
         self._power = value
 
+    def spawn_shield(self) -> Action:
+        from powerup import PowerUp
+        y = randint(24, RESOLUTION[1] - 24)
+        speed = 50 + random() * 50
+        self.may_spawn_shield = 10.0
+        return Action.register(PowerUp(y, speed, power=PowerUp.shield))
+
     async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(
             self.facet,
@@ -83,6 +92,11 @@ class Player(Collider):
         self.x = max([0, min([RESOLUTION[0] * 2/3, self.x])])
         self.y = max([0, min([RESOLUTION[1], self.y])])
         self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
+        self.may_spawn_shield -= delta
+        self.may_spawn_shield = max(0.0, self.may_spawn_shield)
+
+        if self.may_spawn_shield == 0 and self.shield is None:
+            return self.spawn_shield()
 
         if self.keys[4] and self.no_fire == 0:
             fire = Fire(self.xy, self.angle, power=self.power)

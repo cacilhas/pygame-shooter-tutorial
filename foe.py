@@ -103,8 +103,6 @@ class RocketFoe(Foe):
         self.x -= self.dx * delta
         self.y += clamp(self.dy, -100, 100) * delta
         self.dy -= self.dy * delta
-        if self.x + self.facet.get_width() < 0:
-            return self.remove_self()
 
     def remove_self(self) -> Action:
         action = Action.remove(self)

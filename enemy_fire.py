@@ -47,10 +47,7 @@ class EnemyFire(Collider):
         if not self.started:
             self.started = True
             return Action.play_audio(AudioBag.explosions[0])
-
         self.x -= self.speed * delta
-        if self.x < -self.radius:
-            return Action.remove(self)
 
     async def on_collision(self, other: 'Collider') -> Optional[Action]:
         from foe import Foe

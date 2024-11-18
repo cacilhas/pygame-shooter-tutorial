@@ -95,12 +95,21 @@ class Fire(Collider):
 
         if self.power in [4, 5]:
             self._radius += math.sqrt(self.speed * self._radius) * 5 * delta
-
             if self.radius > 1280:
                 return Action.remove(self)
-
             facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
-            color = (0x00,0xff, 0xbb, min(255, int(256 - (256.0 * self.radius / 1280.0))))
+            color = (
+                0x00,
+                0xff,
+                0xbb,
+                max(
+                    0x00,
+                    min(
+                        0xff,
+                        int(256 - (256.0 * self.radius / 1280.0)),
+                    ),
+                ),
+            )
             pygame.draw.circle(facet, color, (self.radius, self.radius), self.radius)
             self.facet = facet
             return

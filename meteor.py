@@ -43,10 +43,8 @@ class Meteor(Collider):
     def xy(self) -> tuple[float, float]:
         return self.x, self.y
 
-    async def update(self, delta: float) -> Optional[Action]:
+    async def update(self, delta: float) -> None:
         self.x -= self.speed * delta
-        if self.x < -self.facet.get_width():
-            return Action.remove(self)
         self.angle += self.rotation * delta
 
     async def draw(self, surface: Surface) -> None:

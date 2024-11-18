@@ -26,11 +26,9 @@ class FoeForceField(Collider):
 
     async def update(self, delta: float) -> Optional[Action]:
         self.size += self.size * 5 * delta
-        self.x -= self.speed * delta
-
         if self.size > 120:
             return Action.remove(self)
-
+        self.x -= self.speed * delta
         facet = self.facet = Surface((self.size*2, self.size*2), pygame.SRCALPHA)
         pygame.draw.arc(facet, 'yellow', facet.get_rect(), 0.0, 360.0, width=4)
 

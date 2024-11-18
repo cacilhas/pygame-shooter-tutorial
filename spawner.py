@@ -21,8 +21,8 @@ class FoeSpawner(Actor):
 
         if self.wait_time == 0:
             self.wait_time = random() * self.max_wait_time
-            self.max_wait_time = max(0.25, self.max_wait_time - 0.06125)
-            if self.reset is None and self.max_wait_time == 0.25:
+            self.max_wait_time = max(0.5, self.max_wait_time - 0.06125)
+            if self.reset is None and self.max_wait_time == 0.5:
                 self.reset = 20.0
             y = randint(10, RESOLUTION[1] - 10)
             speed = 200 + random() * 200
@@ -70,21 +70,3 @@ class PowerUpSpawner(Actor):
             y = randint(24, RESOLUTION[1] - 24)
             speed = 50 + random() * 50
             return Action.register(PowerUp(y, speed))
-
-
-class ShieldSpawner(Actor):
-
-    def __init__(self) -> None:
-        self.min_wait_time: float = 18.0
-        self.max_wait_time: float = 24.0
-        self.wait_time: float = 5.0
-
-    async def update(self, delta: float) -> Optional[Action]:
-        self.wait_time -= delta
-        self.wait_time = max(0.0, self.wait_time)
-
-        if self.wait_time == 0:
-            self.wait_time = self.min_wait_time + random() * (self.max_wait_time - self.max_wait_time)
-            y = randint(24, RESOLUTION[1] - 24)
-            speed = 50 + random() * 50
-            return Action.register(PowerUp(y, speed, power=PowerUp.shield))

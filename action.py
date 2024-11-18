@@ -191,7 +191,7 @@ class Actor:
 
     @property
     def xy(self) -> tuple[float, float]:
-        return 1 << 32, 1 << 32
+        return 0.0, 0.0
 
     def blit(self, *, dest: Surface, src: Surface) -> None:
         x, y = self.pos

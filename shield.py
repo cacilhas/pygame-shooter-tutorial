@@ -54,12 +54,12 @@ class Shield(Collider):
     async def update(self, delta: float) -> Optional[Action]:
         tx, ty = self.player.xy
         tangle = self.player.angle
-        tx += math.cos(tangle) * self.desired_size/2
-        ty += math.sin(tangle) * self.desired_size/2
+        tx += math.cos(tangle) * self.desired_size
+        ty += math.sin(tangle) * self.desired_size
 
-        self.angle += (tangle - self.angle) * 20 * delta
-        self.x += (tx - self.x) * 50 * delta
-        self.y += (ty - self.y) * 20 * delta
+        self.angle = tangle
+        self.x = tx
+        self.y = ty
         self.size += (self.desired_size - self.size) * 4 * delta
 
     async def on_collision(self, other: Collider) -> Optional[Action]:

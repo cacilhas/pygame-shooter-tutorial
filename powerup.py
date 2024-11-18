@@ -62,10 +62,8 @@ class PowerUp(Collider):
     def radius(self) -> float:
         return 24
 
-    async def update(self, delta: float) -> Optional[Action]:
+    async def update(self, delta: float) -> None:
         self.x -= self.speed * delta
-        if self.x < -self.facet.get_width():
-            return Action.remove(self)
 
     async def draw(self, surface: Surface) -> None:
         return self.blit(dest=surface, src=self.facet)
