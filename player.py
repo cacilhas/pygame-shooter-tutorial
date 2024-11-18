@@ -45,6 +45,7 @@ class Player(Collider):
         self._power: int = 0
         self.previous_power: int = 0
         self.shots: int = 0
+        self.shield: Optional[Shield] = None
 
     @property
     def radius(self) -> float:
@@ -137,11 +138,14 @@ class Player(Collider):
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, (EnemyFire, Foe, FoeForceField, Meteor)):
-            return Action.set(
+            actions = [
                 Action.remove(self),
                 Action.register(Explosion(pos=self.pos, size=120)),
                 Action.player_hit(),
-            )
+            ]
+            if self.shield:
+                actions.append(Action.remove(self.shield))
+            return Action.set(*actions)
 
         from powerup import PowerUp
         if isinstance(other, PowerUp):
@@ -156,4 +160,12 @@ class Player(Collider):
                 return Action.register(Fire(self.pos, 0, power=5))
 
             elif other.power == PowerUp.shield:
-                return Action.register(Shield(self))
+                old = self.shield
+                shield = Shield(self)
+                if old:
+                    return Action.set(
+                        Action.remove(old),
+                        Action.register(shield),
+                    )
+                else:
+                    return Action.register(shield)

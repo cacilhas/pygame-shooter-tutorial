@@ -63,5 +63,6 @@ class EnemyFire(Collider):
             return Action.remove(self)
 
         from player import Player
-        if isinstance(other, Player):
+        from shield import Shield
+        if isinstance(other, (Player, Shield)):
             return Action.remove(self)
