@@ -11,6 +11,7 @@ from fire import Fire
 from foe import Foe
 from foe_force_field import FoeForceField
 from meteor import Meteor
+from shield import Shield
 from sounds import AudioBag
 from util import async_gen
 
@@ -146,8 +147,13 @@ class Player(Collider):
         if isinstance(other, PowerUp):
             if other.power < 4:
                 self.power = other.power
+
             elif other.power == 4:
                 self.previous_power = self.power
                 self.power = 4
+
             elif other.power == 5:
-                return  Action.register(Fire(self.pos, 0, power=5))
+                return Action.register(Fire(self.pos, 0, power=5))
+
+            elif other.power == PowerUp.shield:
+                return Action.register(Shield(self))

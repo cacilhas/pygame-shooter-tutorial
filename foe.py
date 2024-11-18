@@ -40,8 +40,9 @@ class Foe(Collider):
         return self.x, self.y
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
-        if isinstance(other, (Fire, EnemyFire)):
-            if isinstance(other, Fire) and other.power in [4, 5]:
+        from shield import Shield
+        if isinstance(other, (Fire, EnemyFire, Shield)):
+            if isinstance(other, Fire) and other.power in [4, 5] or isinstance(other, Shield):
                 self.hp = 0
             else:
                 self.hp -= 1

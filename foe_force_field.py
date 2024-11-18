@@ -2,6 +2,7 @@ from typing import Optional
 import pygame
 from pygame.surface import Surface
 from action import Action, Collider
+from sounds import AudioBag
 
 
 class FoeForceField(Collider):
@@ -32,3 +33,11 @@ class FoeForceField(Collider):
 
         facet = self.facet = Surface((self.size*2, self.size*2), pygame.SRCALPHA)
         pygame.draw.arc(facet, 'yellow', facet.get_rect(), 0.0, 360.0, width=4)
+
+    async def on_collision(self, other: Collider) -> Optional[Action]:
+        from shield import Shield
+        if isinstance(other, Shield):
+            return Action.set(
+                Action.remove(self),
+                Action.play_audio(AudioBag.explosions[0]),
+            )

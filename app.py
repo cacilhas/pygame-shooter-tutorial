@@ -17,7 +17,7 @@ from player import Player
 from reload import Reload
 from score import Score
 from sounds import AudioBag
-from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner
+from spawner import FoeSpawner, MeteorSpawner, PowerUpSpawner, ShieldSpawner
 from stars import StarsBackground
 
 
@@ -45,16 +45,17 @@ class App:
         """
         Add actors to the world
         """
-        self.actors.extend((
+        self.actors.extend([
             StarsBackground(),
             FoeSpawner(),
             PowerUpSpawner(),
             MeteorSpawner(),
+            ShieldSpawner(),
             FpsDisplay(),
             Score(self),
             Player(),
             Lives(self),
-        ))
+        ])
         pygame.mixer_music.play(-1)
         pygame.mixer_music.set_volume(1.0)
 

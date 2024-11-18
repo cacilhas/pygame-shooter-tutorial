@@ -1,6 +1,6 @@
 from math import isinf
 from random import randint, random
-from typing import Optional
+from typing import Literal, Optional
 
 from pygame import Surface
 import pygame
@@ -15,6 +15,7 @@ from sounds import AudioBag
 class PowerUp(Collider):
 
     facets: list[Surface] = []
+    shield: Literal[6] = 6
 
     @classmethod
     def load_assets(cls) -> None:
@@ -25,25 +26,26 @@ class PowerUp(Collider):
             text = font.render(str(i), True, color[1])
             facet.blit(text, (text.get_width()/2, 4))
             cls.facets.append(facet)
+        cls.facets.append(pygame.image.load('assets/shield-badge.png'))
 
-    def __init__(self, y: float, speed: float) -> None:
+    def __init__(self, y: float, speed: float, *, power: Optional[int]=None) -> None:
         if not self.facets:
             self.load_assets()
 
-        power: int = 0
-        match randint(0, 11):
-            case 0:
-                power = 0
-            case 1 | 2 | 3 | 4:
-                power = 1
-            case 5 | 6 | 7:
-                power = 2
-            case 8 | 9:
-                power = 3
-            case 10:
-                power = 4
-            case 11:
-                power = 5
+        if power is None:
+            match randint(0, 11):
+                case 1 | 2 | 3 | 4:
+                    power = 1
+                case 5 | 6 | 7:
+                    power = 2
+                case 8 | 9:
+                    power = 3
+                case 10:
+                    power = 4
+                case 11:
+                    power = 5
+                case _:
+                    power = 0
 
         self.facet = self.facets[power]
         self.power = power
@@ -73,7 +75,9 @@ class PowerUp(Collider):
             player: Player = other
             audio: Sound
 
-            if self.power == 5:
+            if self.power == self.shield:
+                audio = AudioBag.catch
+            elif self.power == 5:
                 # Double explosion sound
                 audio = AudioBag.explosions[1]
             elif player.power < self.power:
