@@ -3,34 +3,37 @@ from random import random
 from typing import Optional
 from pygame import Surface
 import pygame
-from action import Action, Actor, Collider
+from action import Action, Collider
 from consts import RESOLUTION
 from sounds import AudioBag
 
 
 class Fire(Collider):
-
     facets: list[Surface] = []
 
     @classmethod
     def load_assets(cls) -> None:
         bullet = pygame.transform.scale(
-            pygame.image.load('assets/bullet.png').convert_alpha(),
+            pygame.image.load("assets/bullet.png").convert_alpha(),
             (12, 12),
         )
         laser = Surface((24, 24), pygame.SRCALPHA)
-        pygame.draw.line(laser, 'red', (0,12), (24,12), 2)
+        pygame.draw.line(laser, "red", (0, 12), (24, 12), 2)
         fake_nuke = Surface((1, 1), pygame.SRCALPHA)
-        cls.facets.extend([
-            bullet,
-            bullet,
-            laser,
-            laser,
-            fake_nuke,
-            fake_nuke,
-        ])
+        cls.facets.extend(
+            [
+                bullet,
+                bullet,
+                laser,
+                laser,
+                fake_nuke,
+                fake_nuke,
+            ]
+        )
 
-    def __init__(self, pos: tuple[float, float], angle: float, *, power: int, quiet: bool=False) -> None:
+    def __init__(
+        self, pos: tuple[float, float], angle: float, *, power: int, quiet: bool = False
+    ) -> None:
         if not self.facets:
             self.load_assets()
 
@@ -77,8 +80,16 @@ class Fire(Collider):
             # Triple shoot
             self.power -= 1
             return Action.set(
-                Action.register(Fire(self.xy, self.angle - math.pi/12, power=self.power, quiet=True)),
-                Action.register(Fire(self.xy, self.angle + math.pi/12, power=self.power, quiet=True)),
+                Action.register(
+                    Fire(
+                        self.xy, self.angle - math.pi / 12, power=self.power, quiet=True
+                    )
+                ),
+                Action.register(
+                    Fire(
+                        self.xy, self.angle + math.pi / 12, power=self.power, quiet=True
+                    )
+                ),
             )
 
         if not self.started:
@@ -97,15 +108,15 @@ class Fire(Collider):
             self._radius += math.sqrt(self.speed * self._radius) * 5 * delta
             if self.radius > 1280:
                 return Action.remove(self)
-            facet = Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
+            facet = Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
             color = (
                 0x00,
-                0xff,
-                0xbb,
+                0xFF,
+                0xBB,
                 max(
                     0x00,
                     min(
-                        0xff,
+                        0xFF,
                         int(256 - (256.0 * self.radius / 1280.0)),
                     ),
                 ),
@@ -123,10 +134,11 @@ class Fire(Collider):
         if self.x > RESOLUTION[0]:
             return Action.remove(self)
 
-    async def on_collision(self, other: 'Collider') -> Optional[Action]:
+    async def on_collision(self, other: "Collider") -> Optional[Action]:
         if self.power not in [4, 5]:
             from foe import Foe
             from foe_force_field import FoeForceField
             from meteor import Meteor
+
             if isinstance(other, (Foe, FoeForceField, Meteor)):
                 return Action.remove(self)

@@ -8,25 +8,22 @@ from sounds import AudioBag
 
 
 class Player(Protocol):
-
     angle: float
-    shield: Optional['Shield']
+    shield: Optional["Shield"]
 
     @property
-    def xy(self) -> tuple[float, float]:
-        ...
+    def xy(self) -> tuple[float, float]: ...
 
 
 class Shield(Collider):
-
     facet: Surface
 
     @classmethod
     def load_assets(cls):
-        cls.facet = pygame.image.load('assets/shield.png')
+        cls.facet = pygame.image.load("assets/shield.png")
 
     def __init__(self, player: Player) -> None:
-        if not hasattr(Shield, 'facet'):
+        if not hasattr(Shield, "facet"):
             self.load_assets()
         self.player = player
         player.shield = self
@@ -46,7 +43,7 @@ class Shield(Collider):
 
     async def draw(self, surface: Surface) -> None:
         facet = pygame.transform.rotate(
-            pygame.transform.scale(self.facet, (self.size*2, self.size*2)),
+            pygame.transform.scale(self.facet, (self.size * 2, self.size * 2)),
             -self.angle * 180 / math.pi,
         )
         return self.blit(dest=surface, src=facet)

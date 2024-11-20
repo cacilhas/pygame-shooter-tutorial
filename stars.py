@@ -1,17 +1,16 @@
 from random import choice, randint
-from pygame import Color, Surface
+from pygame import Surface
 import pygame
-from action import Action, Actor
+from action import Actor
 from consts import RESOLUTION
 
 
 class StarsBackground(Actor):
-
     colors = [
-        (0xff, 0xff, 0xff),
-        (0xff, 0xd0, 0xd0),
-        (0xff, 0xff, 0xd0),
-        (0xd0, 0xd0, 0xff),
+        (0xFF, 0xFF, 0xFF),
+        (0xFF, 0xD0, 0xD0),
+        (0xFF, 0xFF, 0xD0),
+        (0xD0, 0xD0, 0xFF),
     ]
 
     def __init__(self) -> None:
@@ -29,7 +28,7 @@ class StarsBackground(Actor):
         rect = (0, 0, *RESOLUTION)
 
         for i, facet in enumerate(facets):
-            pygame.draw.rect(facet, '#00000080', rect)
+            pygame.draw.rect(facet, "#00000080", rect)
             for x in range(0, width, 1 << i):
                 y = randint(0, RESOLUTION[1])
                 color = choice(self.colors)

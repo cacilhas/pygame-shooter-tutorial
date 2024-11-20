@@ -1,17 +1,14 @@
-from math import isinf
 from typing import Protocol
-from action import Action, Collider
+from action import Collider
 
 
 class Foe(Protocol):
-
     x: float
     y: float
     dy: float
 
 
 class FoeSensor(Collider):
-
     def __init__(self, foe: Foe) -> None:
         self.foe = foe
 
@@ -30,6 +27,7 @@ class FoeSensor(Collider):
         from player import Player
         from foe import Foe
         from meteor import Meteor
+
         if isinstance(other, (Foe, Meteor, Player)):
             dy = 80 if isinstance(other, Player) else -80
             _, y = other.xy

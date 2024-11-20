@@ -9,7 +9,6 @@ from powerup import PowerUp
 
 
 class FoeSpawner(Actor):
-
     def __init__(self) -> None:
         self.wait_time: float = 0.0
         self.max_wait_time: float = 5.0
@@ -38,7 +37,6 @@ class FoeSpawner(Actor):
 
 
 class MeteorSpawner(Actor):
-
     def __init__(self) -> None:
         self.wait_time: float = 10.0
         self.max_wait_time: float = 20.0
@@ -56,7 +54,6 @@ class MeteorSpawner(Actor):
 
 
 class PowerUpSpawner(Actor):
-
     def __init__(self) -> None:
         self.min_wait_time: float = 10.0
         self.max_wait_time: float = 20.0
@@ -66,7 +63,9 @@ class PowerUpSpawner(Actor):
         self.wait_time -= delta
         self.wait_time = max(0.0, self.wait_time)
         if self.wait_time == 0:
-            self.wait_time = self.min_wait_time + random() * (self.max_wait_time - self.max_wait_time)
+            self.wait_time = self.min_wait_time + random() * (
+                self.max_wait_time - self.max_wait_time
+            )
             y = randint(24, RESOLUTION[1] - 24)
             speed = 50 + random() * 50
             return Action.register(PowerUp(y, speed))

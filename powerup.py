@@ -1,34 +1,32 @@
-from math import isinf
-from random import randint, random
+from random import randint
 from typing import Literal, Optional
 
 from pygame import Surface
 import pygame
 from pygame.font import Font
 from pygame.mixer import Sound
-from action import Action, Actor, Collider
+from action import Action, Collider
 from consts import RESOLUTION
 from player import Player
 from sounds import AudioBag
 
 
 class PowerUp(Collider):
-
     facets: list[Surface] = []
     shield: Literal[6] = 6
 
     @classmethod
     def load_assets(cls) -> None:
-        font = Font('assets/digital-7.ttf', 48)
+        font = Font("assets/digital-7.ttf", 48)
         for i, color in enumerate(colors):
             facet = Surface((48, 48), pygame.SRCALPHA)
             pygame.draw.circle(facet, color[0], (24, 24), 24)
             text = font.render(str(i), True, color[1])
-            facet.blit(text, (text.get_width()/2, 4))
+            facet.blit(text, (text.get_width() / 2, 4))
             cls.facets.append(facet)
-        cls.facets.append(pygame.image.load('assets/shield-badge.png'))
+        cls.facets.append(pygame.image.load("assets/shield-badge.png"))
 
-    def __init__(self, y: float, speed: float, *, power: Optional[int]=None) -> None:
+    def __init__(self, y: float, speed: float, *, power: Optional[int] = None) -> None:
         if not self.facets:
             self.load_assets()
 
@@ -94,10 +92,10 @@ class PowerUp(Collider):
 
 
 colors = [
-    ('#222222', 'white'),
-    ('orange', 'black'),
-    ('red', 'black'),
-    ('#ff4466', 'black'),
-    ('#00aaff', 'black'),
-    ('#ff44ff', 'black'),
+    ("#222222", "white"),
+    ("orange", "black"),
+    ("red", "black"),
+    ("#ff4466", "black"),
+    ("#00aaff", "black"),
+    ("#ff44ff", "black"),
 ]

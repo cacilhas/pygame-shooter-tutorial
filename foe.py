@@ -1,11 +1,11 @@
 import math
 from random import randint, random
-from typing import Iterable, Optional
+from typing import Optional
 from pygame import Surface
 import pygame
 from pygame.math import clamp
 from action import Action, Collider
-from consts import FPS, RESOLUTION
+from consts import RESOLUTION
 from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
@@ -14,7 +14,6 @@ from sounds import AudioBag
 
 
 class Foe(Collider):
-
     __inited: bool = False
 
     facet: Surface
@@ -24,7 +23,7 @@ class Foe(Collider):
     dx: float
     hp: int
 
-    def __new__(cls, y: float, speed: float) -> 'Foe':
+    def __new__(cls, y: float, speed: float) -> "Foe":
         if not Foe.__inited:
             RocketFoe.load_assets()
             ShooterFoe.load_assets()
@@ -41,8 +40,13 @@ class Foe(Collider):
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         from shield import Shield
+
         if isinstance(other, (Fire, EnemyFire, Shield)):
-            if isinstance(other, Fire) and other.power in [4, 5] or isinstance(other, Shield):
+            if (
+                isinstance(other, Fire)
+                and other.power in [4, 5]
+                or isinstance(other, Shield)
+            ):
                 self.hp = 0
             else:
                 self.hp -= 1
@@ -69,14 +73,13 @@ class Foe(Collider):
 
 
 class RocketFoe(Foe):
-
-    def __new__(cls, y: float, speed: float) -> 'Foe':
+    def __new__(cls, y: float, speed: float) -> "Foe":
         return Collider.__new__(cls)
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
-            pygame.image.load('assets/foe-1.png').convert_alpha(),
+            pygame.image.load("assets/foe-1.png").convert_alpha(),
             (64, 40),
         )
 
@@ -112,6 +115,7 @@ class RocketFoe(Foe):
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         from meteor import Meteor
+
         if isinstance(other, Meteor):
             return Action.set(
                 self.remove_self(),
@@ -122,7 +126,6 @@ class RocketFoe(Foe):
 
 
 class ShooterFoe(Foe):
-
     z: int = 10
 
     def __new__(cls, y: float, speed: float) -> Foe:
@@ -131,7 +134,7 @@ class ShooterFoe(Foe):
     @classmethod
     def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
-            pygame.image.load('assets/foe-2.png').convert_alpha(),
+            pygame.image.load("assets/foe-2.png").convert_alpha(),
             (75, 100),
         )
 
@@ -168,25 +171,26 @@ class ShooterFoe(Foe):
 
         if random() < 0.03125:
             from enemy_fire import EnemyFire
+
             return Action.register(EnemyFire(self))
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, EnemyFire) and other.shooter is self:
             return
         from player import Player
+
         if isinstance(other, Player):
             return Action.remove(self)
         return await super().on_collision(other)
 
 
 class LaserProofFoe(RocketFoe):
-
     facets: list[Surface] = []
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facets = [
-            pygame.image.load(f'assets/foe-3/{idx}.png').convert_alpha()
+            pygame.image.load(f"assets/foe-3/{idx}.png").convert_alpha()
             for idx in range(12)
         ]
 
@@ -210,6 +214,7 @@ class LaserProofFoe(RocketFoe):
 
         if random() < 0.03125:
             from enemy_fire import EnemyFire
+
             actions.append(Action.register(EnemyFire(self)))
 
         if actions:
@@ -218,10 +223,12 @@ class LaserProofFoe(RocketFoe):
     async def on_collision(self, other: Collider) -> Optional[Action]:
         if isinstance(other, Fire) and other.power in [2, 3]:
             from foe_force_field import FoeForceField
+
             return Action.register(FoeForceField(self.xy, self.dx))
         if isinstance(other, EnemyFire) and other.shooter is self:
             return
         from player import Player
+
         if isinstance(other, Player):
             return self.remove_self()
         return await super().on_collision(other)

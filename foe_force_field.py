@@ -6,7 +6,6 @@ from sounds import AudioBag
 
 
 class FoeForceField(Collider):
-
     def __init__(self, pos: tuple[float, float], speed: float) -> None:
         self.x, self.y = pos
         self.size = 12
@@ -29,11 +28,12 @@ class FoeForceField(Collider):
         if self.size > 120:
             return Action.remove(self)
         self.x -= self.speed * delta
-        facet = self.facet = Surface((self.size*2, self.size*2), pygame.SRCALPHA)
-        pygame.draw.arc(facet, 'yellow', facet.get_rect(), 0.0, 360.0, width=4)
+        facet = self.facet = Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+        pygame.draw.arc(facet, "yellow", facet.get_rect(), 0.0, 360.0, width=4)
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
         from shield import Shield
+
         if isinstance(other, Shield):
             return Action.set(
                 Action.remove(self),

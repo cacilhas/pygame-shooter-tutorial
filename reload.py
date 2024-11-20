@@ -7,7 +7,6 @@ from player import Player
 
 
 class Reload(Actor):
-
     def __init__(self) -> None:
         self.delay: float = 3.0
 
@@ -17,6 +16,8 @@ class Reload(Actor):
             return Action.set(
                 Action.remove(self),
                 Action.decr_lives(),
-                Action.remove_if(lambda actor: isinstance(actor, (EnemyFire, Foe, Meteor))),
+                Action.remove_if(
+                    lambda actor: isinstance(actor, (EnemyFire, Foe, Meteor))
+                ),
                 Action.register(Player()),
             )

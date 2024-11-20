@@ -1,4 +1,3 @@
-
 from typing import Optional
 from pygame import Surface
 import pygame
@@ -7,14 +6,13 @@ from sounds import AudioBag
 
 
 class Explosion(Actor):
-
     facets: list[Surface] = []
     z: int = 12
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facets = [
-            pygame.image.load(f'assets/explosion/flash{i:02d}.png').convert_alpha()
+            pygame.image.load(f"assets/explosion/flash{i:02d}.png").convert_alpha()
             for i in range(9)
         ]
 
@@ -27,8 +25,7 @@ class Explosion(Actor):
             self.load_assets()
 
         self.facets = [
-            pygame.transform.scale(facet, (size, size))
-            for facet in self.facets
+            pygame.transform.scale(facet, (size, size)) for facet in self.facets
         ]
 
         self.__pos = pos

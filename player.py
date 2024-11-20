@@ -1,5 +1,4 @@
 import math
-from random import randint, random
 from typing import Optional
 import pygame
 from pygame import Surface
@@ -18,18 +17,17 @@ from util import async_gen
 
 
 class Player(Collider):
-
     facet: Surface
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
-            pygame.image.load('assets/player.png').convert_alpha(),
+            pygame.image.load("assets/player.png").convert_alpha(),
             (64, 64),
         )
 
     def __init__(self) -> None:
-        if not hasattr(Player, 'facet'):
+        if not hasattr(Player, "facet"):
             Player.load_assets()
 
         pygame.display.set_icon(self.facet)
@@ -82,9 +80,9 @@ class Player(Collider):
         self.x += self.speed * self.dx * delta
         self.y += self.speed * self.dy * delta
         self.angle += (self.dangle - self.angle) * delta * 4
-        self.x = max([0, min([RESOLUTION[0] * 2/3, self.x])])
+        self.x = max([0, min([RESOLUTION[0] * 2 / 3, self.x])])
         self.y = max([0, min([RESOLUTION[1], self.y])])
-        self.angle = max([-math.pi/4, min(math.pi/4, self.angle)])
+        self.angle = max([-math.pi / 4, min(math.pi / 4, self.angle)])
 
         actions: list[Action] = []
         if self.shield is None:
@@ -94,7 +92,6 @@ class Player(Collider):
             fire = Fire(self.xy, self.angle, power=self.power)
             self.no_fire = fire.delay
             actions.append(Action.register(fire))
-            play_audio: Action | None = None
             if self.power == 4:
                 self.shots -= 1
                 if self.shots <= 0:
@@ -158,6 +155,7 @@ class Player(Collider):
             return Action.set(*actions)
 
         from powerup import PowerUp
+
         if isinstance(other, PowerUp):
             if other.power < 4:
                 self.power = other.power

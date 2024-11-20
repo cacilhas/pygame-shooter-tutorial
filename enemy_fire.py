@@ -6,25 +6,22 @@ from sounds import AudioBag
 
 
 class Foe(Protocol):
-
     @property
-    def xy(self) -> tuple[float, float]:
-        ...
+    def xy(self) -> tuple[float, float]: ...
 
 
 class EnemyFire(Collider):
-
     facet: Surface
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facet = pygame.transform.scale(
-            pygame.image.load('assets/enemy-bullet.png').convert_alpha(),
+            pygame.image.load("assets/enemy-bullet.png").convert_alpha(),
             (12, 12),
         )
 
     def __init__(self, shooter: Foe) -> None:
-        if not hasattr(EnemyFire, 'facet'):
+        if not hasattr(EnemyFire, "facet"):
             self.load_assets()
 
         self.x, self.y = shooter.xy
@@ -49,17 +46,19 @@ class EnemyFire(Collider):
             return Action.play_audio(AudioBag.explosions[0])
         self.x -= self.speed * delta
 
-    async def on_collision(self, other: 'Collider') -> Optional[Action]:
+    async def on_collision(self, other: "Collider") -> Optional[Action]:
         from foe import Foe
+
         if isinstance(other, Foe):
             foe: Foe = other
             if foe is self.shooter:
                 return
 
-            from explosion import Explosion
+
             return Action.remove(self)
 
         from player import Player
         from shield import Shield
+
         if isinstance(other, (Player, Shield)):
             return Action.remove(self)

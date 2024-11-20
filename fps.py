@@ -2,21 +2,20 @@ import pygame
 from pygame.event import Event
 from pygame.font import Font
 from pygame.surface import Surface
-from action import Action, Actor
+from action import Actor
 
 
 class FpsDisplay(Actor):
-
     z: int = 20
 
     def __init__(self) -> None:
-        self.font = Font('assets/digital-7.ttf', 24)
-        self.text = 'FPS: 0.0'
+        self.font = Font("assets/digital-7.ttf", 24)
+        self.text = "FPS: 0.0"
         self.present = False
 
     async def update(self, delta: float) -> None:
         fps = 1 / delta
-        self.text = f'FPS: {fps:.1f}'
+        self.text = f"FPS: {fps:.1f}"
 
     async def react(self, events: list[Event]) -> None:
         for event in events:
@@ -26,6 +25,6 @@ class FpsDisplay(Actor):
 
     async def draw(self, surface: Surface) -> None:
         if self.present:
-            text = self.font.render(self.text, True, 'white')
+            text = self.font.render(self.text, True, "white")
             x = surface.get_width() - text.get_width() - 5
             surface.blit(text, (x, 5))

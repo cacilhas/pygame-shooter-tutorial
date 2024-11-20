@@ -3,9 +3,8 @@ from random import choice
 from typing import Optional
 from pygame import Surface
 import pygame
-from action import Action, Actor, Collider
+from action import Action, Collider
 from consts import RESOLUTION
-from enemy_fire import EnemyFire
 from explosion import Explosion
 from fire import Fire
 from foe import RocketFoe
@@ -13,13 +12,12 @@ from sounds import AudioBag
 
 
 class Meteor(Collider):
-
     facets: list[Surface] = []
 
     @classmethod
     def load_assets(cls) -> None:
         cls.facets = [
-            pygame.image.load(f'assets/meteors/meteor{i}.png').convert_alpha()
+            pygame.image.load(f"assets/meteors/meteor{i}.png").convert_alpha()
             for i in range(1, 5)
         ]
 
@@ -52,7 +50,11 @@ class Meteor(Collider):
         self.blit(dest=surface, src=facet)
 
     async def on_collision(self, other: Collider) -> Optional[Action]:
-        if isinstance(other, Fire) and other.power in [0, 1] or isinstance(other, RocketFoe):
+        if (
+            isinstance(other, Fire)
+            and other.power in [0, 1]
+            or isinstance(other, RocketFoe)
+        ):
             return Action.set(
                 Action.register(Explosion(pos=other.pos, size=72)),
                 Action.play_audio(AudioBag.explosions[0]),
