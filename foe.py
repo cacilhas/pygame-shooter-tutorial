@@ -73,6 +73,7 @@ class Foe(Collider):
 
 
 class RocketFoe(Foe):
+
     def __new__(cls, y: float, speed: float) -> "Foe":
         return Collider.__new__(cls)
 
@@ -208,8 +209,7 @@ class LaserProofFoe(RocketFoe):
         self.idx += delta * 10
         self.facet = self.facets[int(self.idx) % 12]
         actions: list[Action] = []
-        action = await super().update(delta)
-        if action:
+        if action := await super().update(delta):
             actions.append(action)
 
         if random() < 0.03125:

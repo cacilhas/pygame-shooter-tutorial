@@ -53,8 +53,6 @@ class EnemyFire(Collider):
             foe: Foe = other
             if foe is self.shooter:
                 return
-
-
             return Action.remove(self)
 
         from player import Player
